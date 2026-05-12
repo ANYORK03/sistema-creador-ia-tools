@@ -281,28 +281,8 @@
       <div class="res-title">✅ Contenido <span>listo para publicar</span></div>
       <button class="btn-regen" onclick="generar()">↻ Regenerar</button>
     </div>
-
-    <div class="tabs">
-      <div class="tab active" data-tab="hooks">🔥 Hooks (3)</div>
-      <div class="tab" data-tab="guion">🎬 Guión 60s</div>
-      <div class="tab" data-tab="imagen">🎨 Prompt Imagen</div>
-    </div>
-
-    <!-- TAB HOOKS -->
-    <div class="tab-panel active" id="tab-hooks">
-      <div id="hooks-list"></div>
-      <div class="tips-box" id="hooks-tips"></div>
-    </div>
-
-    <!-- TAB GUION -->
-    <div class="tab-panel" id="tab-guion">
-      <div class="script-block" id="guion-content"></div>
-    </div>
-
-    <!-- TAB IMAGEN -->
-    <div class="tab-panel" id="tab-imagen">
-      <div class="prompt-block" id="imagen-content"></div>
-    </div>
+    <div class="tabs" id="tabs-container"></div>
+    <div id="tabs-content"></div>
   </div>
 
 </div>
@@ -331,16 +311,6 @@
       document.querySelectorAll('.plat-btn').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
       plataforma = b.dataset.p;
-    });
-  });
-
-  // Tabs
-  document.querySelectorAll('.tab').forEach(t => {
-    t.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
-      t.classList.add('active');
-      document.getElementById('tab-' + t.dataset.tab).classList.add('active');
     });
   });
 
@@ -381,11 +351,25 @@
   }
 
   function renderResultados(d) {
-    // HOOKS
-    const hooksList = document.getElementById('hooks-list');
-    hooksList.innerHTML = '';
-    d.hooks.forEach((h, i) => {
-      hooksList.innerHTML += `
+    const tabsContainer = document.getElementById('tabs-container');
+    const tabsContent   = document.getElementById('tabs-content');
+
+    // Helper: build image panel HTML (shared across all types)
+    function imgPanel(img) {
+      const p = encodeURIComponent(img.prompt);
+      return `<div class="prompt-intro">${img.instruccion}</div>
+        <div class="prompt-tags">${img.herramientas.map(h=>`<span class="ptag">${h}</span>`).join('')}</div>
+        <div class="prompt-text">${img.prompt}</div>
+        <button class="btn-copy-full" onclick="copiar(this,'${p}')">📋 Copiar prompt</button>
+        <div class="tips-box" style="margin-top:16px;">
+          <div class="tips-title">🎨 Notas de diseño</div>
+          <ul class="tips-list">${img.notas.map(n=>`<li>${n}</li>`).join('')}</ul>
+        </div>`;
+    }
+
+    // Helper: build hooks panel HTML
+    function hooksPanel(hooks, tips) {
+      let html = hooks.map((h,i)=>`
         <div class="hook-item">
           <div class="hook-label">Hook #${i+1} · ${h.tipo}</div>
           <div class="hook-text">${h.texto}</div>
@@ -393,54 +377,148 @@
             <button class="btn-copy" onclick="copiar(this,'${encodeURIComponent(h.texto)}')">📋 Copiar</button>
             <span class="tag-tipo">⏱ ${h.duracion}</span>
           </div>
+        </div>`).join('');
+      if (tips && tips.length) {
+        html += `<div class="tips-box" style="margin-top:16px;">
+          <div class="tips-title">💡 Tips para estos hooks</div>
+          <ul class="tips-list">${tips.map(t=>`<li>${t}</li>`).join('')}</ul>
         </div>`;
+      }
+      return html;
+    }
+
+    let tabs = [];
+    let panels = [];
+
+    if (d.tipo === 'video') {
+      const g = d.guion;
+      const guionTexto = `HOOK:\n${g.hook}\n\nDESARROLLO:\n${g.desarrollo}\n\nCTA:\n${g.cta}`;
+      tabs = [
+        { id:'hooks', label:'🎣 Hooks' },
+        { id:'guion', label:'📜 Guión' },
+        { id:'imagen', label:'🖼 Imagen' }
+      ];
+      panels = [
+        { id:'hooks', html: hooksPanel(d.hooks, d.tipshooks) },
+        { id:'guion', html: `
+          <div class="script-block">
+            <div class="script-section">
+              <div class="script-title hook">🔥 HOOK (0-5 seg)</div>
+              <div class="script-text">${g.hook}</div>
+            </div>
+            <div class="script-section">
+              <div class="script-title desarrollo">📖 DESARROLLO (5-50 seg)</div>
+              <div class="script-text">${g.desarrollo}</div>
+            </div>
+            <div class="script-section">
+              <div class="script-title cta">🎯 CTA (50-60 seg)</div>
+              <div class="script-text">${g.cta}</div>
+            </div>
+            <div class="script-meta">
+              <div class="meta-item">⏱ Duración: <span>${g.duracion}</span></div>
+              <div class="meta-item">📝 Palabras: <span>${g.palabras}</span></div>
+              <div class="meta-item">🎵 Ritmo: <span>${g.ritmo}</span></div>
+            </div>
+            <button class="btn-copy-full" onclick="copiarTexto(this,'${encodeURIComponent(guionTexto)}')">📋 Copiar guión completo</button>
+          </div>` },
+        { id:'imagen', html: imgPanel(d.imagen) }
+      ];
+
+    } else if (d.tipo === 'post') {
+      const c = d.caption;
+      const captionTexto = `${c.hook}\n\n${c.cuerpo}\n\n${c.cta}`;
+      const hashtagsTexto = (d.hashtags || []).join(' ');
+      tabs = [
+        { id:'hooks', label:'🎣 Hooks' },
+        { id:'caption', label:'✍️ Caption' },
+        { id:'hashtags', label:'# Hashtags' },
+        { id:'imagen', label:'🖼 Imagen' }
+      ];
+      panels = [
+        { id:'hooks', html: hooksPanel(d.hooks, null) },
+        { id:'caption', html: `
+          <div class="hook-item">
+            <div class="hook-label">🔥 Hook del caption</div>
+            <div class="hook-text">${c.hook}</div>
+          </div>
+          <div class="hook-item" style="margin-top:10px;">
+            <div class="hook-label">📖 Cuerpo</div>
+            <div class="script-text">${c.cuerpo}</div>
+          </div>
+          <div class="hook-item" style="margin-top:10px;">
+            <div class="hook-label">🎯 CTA</div>
+            <div class="hook-text">${c.cta}</div>
+          </div>
+          <div class="script-meta" style="margin-top:12px;">
+            <div class="meta-item">📝 Longitud: <span>${c.longitud}</span></div>
+          </div>
+          <button class="btn-copy-full" style="margin-top:14px;" onclick="copiarTexto(this,'${encodeURIComponent(captionTexto)}')">📋 Copiar caption completo</button>` },
+        { id:'hashtags', html: `
+          <div class="prompt-text">${(d.hashtags||[]).join('  ')}</div>
+          <button class="btn-copy-full" onclick="copiarTexto(this,'${encodeURIComponent(hashtagsTexto)}')">📋 Copiar hashtags</button>` },
+        { id:'imagen', html: imgPanel(d.imagen) }
+      ];
+
+    } else {
+      // carrusel
+      const slidesTexto = (d.slides||[]).map(s=>`Slide ${s.numero}: ${s.titulo}\n${s.contenido}`).join('\n\n');
+      tabs = [
+        { id:'titulo', label:'🏷 Título' },
+        { id:'slides', label:'📑 Slides' },
+        { id:'caption', label:'✍️ Caption' },
+        { id:'imagen', label:'🖼 Imagen' }
+      ];
+      panels = [
+        { id:'titulo', html: `
+          <div class="hook-item">
+            <div class="hook-label">🏷 Título principal</div>
+            <div class="hook-text" style="font-size:1.15rem;font-weight:800;">${d.titulo||''}</div>
+            <div class="hook-actions" style="margin-top:12px;">
+              <button class="btn-copy" onclick="copiarTexto(this,'${encodeURIComponent(d.titulo||'')}')">📋 Copiar</button>
+            </div>
+          </div>` },
+        { id:'slides', html: (d.slides||[]).map(s=>`
+          <div class="hook-item" style="margin-bottom:10px;">
+            <div class="hook-label">Slide ${s.numero}</div>
+            <div class="hook-text" style="font-weight:700;margin-bottom:6px;">${s.titulo}</div>
+            <div class="script-text">${s.contenido}</div>
+          </div>`).join('') + `<button class="btn-copy-full" style="margin-top:6px;" onclick="copiarTexto(this,'${encodeURIComponent(slidesTexto)}')">📋 Copiar todos los slides</button>` },
+        { id:'caption', html: `
+          <div class="prompt-text">${d.caption||''}</div>
+          <button class="btn-copy-full" onclick="copiarTexto(this,'${encodeURIComponent((d.caption||'') + '\n\n' + (d.hashtags||[]).join(' '))}')">📋 Copiar caption + hashtags</button>
+          <div class="prompt-tags" style="margin-top:14px;">${(d.hashtags||[]).map(h=>`<span class="ptag">${h}</span>`).join('')}</div>` },
+        { id:'imagen', html: imgPanel(d.imagen) }
+      ];
+    }
+
+    // Render tabs
+    tabsContainer.innerHTML = tabs.map((t,i)=>
+      `<button class="tab${i===0?' active':''}" data-tab="${t.id}">${t.label}</button>`
+    ).join('');
+
+    // Render panels
+    tabsContent.innerHTML = panels.map((p,i)=>
+      `<div class="tab-panel${i===0?' active':''}" id="tab-${p.id}">${p.html}</div>`
+    ).join('');
+
+    // Tab click handlers
+    tabsContainer.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabsContainer.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+        tabsContent.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
     });
-    document.getElementById('hooks-tips').innerHTML = `
-      <div class="tips-title">💡 Tips para estos hooks</div>
-      <ul class="tips-list">${d.tipshooks.map(t=>`<li>${t}</li>`).join('')}</ul>`;
 
-    // GUION
-    const g = d.guion;
-    document.getElementById('guion-content').innerHTML = `
-      <div class="script-section">
-        <div class="script-title hook">🔥 HOOK (0-5 seg)</div>
-        <div class="script-text">${g.hook}</div>
-      </div>
-      <div class="script-section">
-        <div class="script-title desarrollo">📖 DESARROLLO (5-50 seg)</div>
-        <div class="script-text">${g.desarrollo}</div>
-      </div>
-      <div class="script-section">
-        <div class="script-title cta">🎯 CTA (50-60 seg)</div>
-        <div class="script-text">${g.cta}</div>
-      </div>
-      <div class="script-meta">
-        <div class="meta-item">⏱ Duración estimada: <span>${g.duracion}</span></div>
-        <div class="meta-item">📝 Palabras aprox: <span>${g.palabras}</span></div>
-        <div class="meta-item">🎵 Ritmo: <span>${g.ritmo}</span></div>
-      </div>
-      <button class="btn-copy-full" onclick="copiarGuion()">📋 Copiar guión completo</button>`;
+    // Show results and scroll — no layout shift
+    const res = document.getElementById('results');
+    res.classList.add('show');
+    setTimeout(() => res.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+  }
 
-    // PROMPT IMAGEN
-    const img = d.imagen;
-    document.getElementById('imagen-content').innerHTML = `
-      <div class="prompt-intro">${img.instruccion}</div>
-      <div class="prompt-tags">${img.herramientas.map(h=>`<span class="ptag">${h}</span>`).join('')}</div>
-      <div class="prompt-text" id="prompt-texto">${img.prompt}</div>
-      <button class="btn-copy-full" onclick="copiar(this,'${encodeURIComponent(img.prompt)}')">📋 Copiar prompt</button>
-      <div class="tips-box" style="margin-top:16px;">
-        <div class="tips-title">🎨 Notas de diseño</div>
-        <ul class="tips-list">${img.notas.map(n=>`<li>${n}</li>`).join('')}</ul>
-      </div>`;
-
-    document.getElementById('results').classList.add('show');
-    document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'start' });
-
-    // Activar tab hooks
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
-    document.querySelector('[data-tab="hooks"]').classList.add('active');
-    document.getElementById('tab-hooks').classList.add('active');
+  function copiarTexto(btn, encoded) {
+    copiar(btn, encoded);
   }
 
   function copiar(btn, encoded) {
@@ -452,15 +530,6 @@
     });
   }
 
-  function copiarGuion() {
-    const g = document.getElementById('guion-content');
-    const texto = g.innerText;
-    navigator.clipboard.writeText(texto).then(() => {
-      const btn = g.querySelector('.btn-copy-full');
-      btn.textContent = '✅ Copiado';
-      setTimeout(() => btn.textContent = '📋 Copiar guión completo', 2000);
-    });
-  }
 </script>
 </body>
 </html>
