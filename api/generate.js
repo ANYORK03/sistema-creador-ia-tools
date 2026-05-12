@@ -67,9 +67,13 @@ Genera el sistema completo de contenido respondiendo ÚNICAMENTE con este JSON v
   const apiKey = process.env.GROQ_API_KEY;
   console.log("KEY presente:", !!apiKey, "| longitud:", apiKey ? apiKey.length : 0);
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
+      signal: controller.signal,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
@@ -77,10 +81,11 @@ Genera el sistema completo de contenido respondiendo ÚNICAMENTE con este JSON v
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 2048,
+        max_tokens: 1500,
         temperature: 0.8,
       }),
     });
+    clearTimeout(timeout);
 
     if (!response.ok) {
       const errBody = await response.text();
@@ -96,7 +101,8 @@ Genera el sistema completo de contenido respondiendo ÚNICAMENTE con este JSON v
     const result = JSON.parse(match[0]);
     return res.status(200).json(result);
   } catch (err) {
-    console.error("ERROR COMPLETO:", err.message, err.stack);
+    clearTimeout(timeout);
+    console.error("ERROR COMPLETO:", err.message);
     return res.status(500).json({ error: "Error generando contenido. Intenta de nuevo." });
   }
 }
