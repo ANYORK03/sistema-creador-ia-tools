@@ -53,9 +53,9 @@ Genera el sistema completo de contenido respondiendo ÚNICAMENTE con este JSON v
     "ritmo": "Rápido y dinámico"
   },
   "imagen": {
-    "instruccion": "Copia este prompt y pégalo en ChatGPT, DALL-E, Midjourney o Canva IA:",
+    "instruccion": "Copia este prompt y pégalo en ChatGPT, DALL-E, Midjourney o Canva IA. Está en español:",
     "herramientas": ["ChatGPT / DALL-E", "Midjourney", "Canva IA", "Adobe Firefly"],
-    "prompt": "Prompt completo en inglés para generar la imagen del post. Incluye composición, colores basados en '${visual}', ambiente, iluminación, estilo, formato 1:1 para post o 9:16 para reels. Específico para el nicho '${nicho}'. Mínimo 80 palabras en inglés.",
+    "prompt": "Prompt completo en español para generar la imagen del post. Incluye composición, colores basados en '${visual}', ambiente, iluminación, estilo, formato 1:1 para post o 9:16 para reels. Específico para el nicho '${nicho}'. Mínimo 80 palabras.",
     "notas": [
       "nota sobre los colores que más convierten en ${plataforma} para este nicho",
       "nota sobre si incluir texto en la imagen",
