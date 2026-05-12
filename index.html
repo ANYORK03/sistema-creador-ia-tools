@@ -354,48 +354,65 @@
     const tabsContainer = document.getElementById('tabs-container');
     const tabsContent   = document.getElementById('tabs-content');
 
-    // Helper: build image panel HTML (shared across all types)
+    // Reset container before anything
+    tabsContainer.innerHTML = '';
+    tabsContent.innerHTML   = '';
+
+    // Safe string helper
+    const s = v => (v != null ? String(v) : '');
+
+    // Helper: imagen panel
     function imgPanel(img) {
-      const p = encodeURIComponent(img.prompt);
-      return `<div class="prompt-intro">${img.instruccion}</div>
-        <div class="prompt-tags">${img.herramientas.map(h=>`<span class="ptag">${h}</span>`).join('')}</div>
-        <div class="prompt-text">${img.prompt}</div>
+      if (!img) return '<p style="color:var(--gray)">Sin datos de imagen.</p>';
+      const p = encodeURIComponent(s(img.prompt));
+      const tools = Array.isArray(img.herramientas) ? img.herramientas : [];
+      const notes = Array.isArray(img.notas) ? img.notas : [];
+      return `<div class="prompt-intro">${s(img.instruccion)}</div>
+        <div class="prompt-tags">${tools.map(h=>`<span class="ptag">${s(h)}</span>`).join('')}</div>
+        <div class="prompt-text">${s(img.prompt)}</div>
         <button class="btn-copy-full" onclick="copiar(this,'${p}')">📋 Copiar prompt</button>
         <div class="tips-box" style="margin-top:16px;">
           <div class="tips-title">🎨 Notas de diseño</div>
-          <ul class="tips-list">${img.notas.map(n=>`<li>${n}</li>`).join('')}</ul>
+          <ul class="tips-list">${notes.map(n=>`<li>${s(n)}</li>`).join('')}</ul>
         </div>`;
     }
 
-    // Helper: build hooks panel HTML
+    // Helper: hooks panel
     function hooksPanel(hooks, tips) {
-      let html = hooks.map((h,i)=>`
+      const arr = Array.isArray(hooks) ? hooks : [];
+      let html = arr.map((h,i)=>`
         <div class="hook-item">
-          <div class="hook-label">Hook #${i+1} · ${h.tipo}</div>
-          <div class="hook-text">${h.texto}</div>
+          <div class="hook-label">Hook #${i+1}${h.tipo ? ' · '+s(h.tipo) : ''}</div>
+          <div class="hook-text">${s(h.texto)}</div>
           <div class="hook-actions">
-            <button class="btn-copy" onclick="copiar(this,'${encodeURIComponent(h.texto)}')">📋 Copiar</button>
-            <span class="tag-tipo">⏱ ${h.duracion}</span>
+            <button class="btn-copy" onclick="copiar(this,'${encodeURIComponent(s(h.texto))}')">📋 Copiar</button>
+            ${h.duracion ? `<span class="tag-tipo">⏱ ${s(h.duracion)}</span>` : ''}
           </div>
         </div>`).join('');
-      if (tips && tips.length) {
+      if (!html) html = '<p style="color:var(--gray);padding:12px 0">Sin hooks generados.</p>';
+      if (Array.isArray(tips) && tips.length) {
         html += `<div class="tips-box" style="margin-top:16px;">
           <div class="tips-title">💡 Tips para estos hooks</div>
-          <ul class="tips-list">${tips.map(t=>`<li>${t}</li>`).join('')}</ul>
+          <ul class="tips-list">${tips.map(t=>`<li>${s(t)}</li>`).join('')}</ul>
         </div>`;
       }
       return html;
     }
 
-    let tabs = [];
-    let panels = [];
+    // Detect content type by actual fields (LLM sometimes returns wrong tipo string)
+    const tipoReal = Array.isArray(d.slides) && d.slides.length
+      ? 'carrusel'
+      : (d.guion && typeof d.guion === 'object')
+        ? 'video'
+        : (d.caption && typeof d.caption === 'object' && d.caption.hook)
+          ? 'post'
+          : (d.tipo === 'post' ? 'post' : 'video');
 
-    // Detect type by actual fields (not just d.tipo) — LLM sometimes ignores tipo field
-    const tipoReal = d.slides ? 'carrusel' : (d.guion ? 'video' : (d.caption && d.caption.hook ? 'post' : (d.tipo || 'video')));
+    let tabs = [], panels = [];
 
     if (tipoReal === 'video') {
-      const g = d.guion;
-      const guionTexto = `HOOK:\n${g.hook}\n\nDESARROLLO:\n${g.desarrollo}\n\nCTA:\n${g.cta}`;
+      const g = d.guion || {};
+      const guionTexto = encodeURIComponent(`HOOK:\n${s(g.hook)}\n\nDESARROLLO:\n${s(g.desarrollo)}\n\nCTA:\n${s(g.cta)}`);
       tabs = [
         { id:'hooks', label:'🎣 Hooks' },
         { id:'guion', label:'📜 Guión' },
@@ -407,64 +424,68 @@
           <div class="script-block">
             <div class="script-section">
               <div class="script-title hook">🔥 HOOK (0-5 seg)</div>
-              <div class="script-text">${g.hook}</div>
+              <div class="script-text">${s(g.hook)}</div>
             </div>
             <div class="script-section">
               <div class="script-title desarrollo">📖 DESARROLLO (5-50 seg)</div>
-              <div class="script-text">${g.desarrollo}</div>
+              <div class="script-text">${s(g.desarrollo)}</div>
             </div>
             <div class="script-section">
               <div class="script-title cta">🎯 CTA (50-60 seg)</div>
-              <div class="script-text">${g.cta}</div>
+              <div class="script-text">${s(g.cta)}</div>
             </div>
             <div class="script-meta">
-              <div class="meta-item">⏱ Duración: <span>${g.duracion}</span></div>
-              <div class="meta-item">📝 Palabras: <span>${g.palabras}</span></div>
-              <div class="meta-item">🎵 Ritmo: <span>${g.ritmo}</span></div>
+              <div class="meta-item">⏱ Duración: <span>${s(g.duracion)}</span></div>
+              <div class="meta-item">📝 Palabras: <span>${s(g.palabras)}</span></div>
+              <div class="meta-item">🎵 Ritmo: <span>${s(g.ritmo)}</span></div>
             </div>
-            <button class="btn-copy-full" onclick="copiarTexto(this,'${encodeURIComponent(guionTexto)}')">📋 Copiar guión completo</button>
+            <button class="btn-copy-full" onclick="copiarTexto(this,'${guionTexto}')">📋 Copiar guión completo</button>
           </div>` },
         { id:'imagen', html: imgPanel(d.imagen) }
       ];
 
     } else if (tipoReal === 'post') {
-      const c = d.caption;
-      const captionTexto = `${c.hook}\n\n${c.cuerpo}\n\n${c.cta}`;
-      const hashtagsTexto = (d.hashtags || []).join(' ');
+      const c = d.caption || {};
+      const captionTexto = encodeURIComponent(`${s(c.hook)}\n\n${s(c.cuerpo)}\n\n${s(c.cta)}`);
+      const hashtagsArr  = Array.isArray(d.hashtags) ? d.hashtags : [];
+      const hashtagsTexto = encodeURIComponent(hashtagsArr.join(' '));
       tabs = [
-        { id:'hooks', label:'🎣 Hooks' },
-        { id:'caption', label:'✍️ Caption' },
+        { id:'hooks',    label:'🎣 Hooks' },
+        { id:'caption',  label:'✍️ Caption' },
         { id:'hashtags', label:'# Hashtags' },
-        { id:'imagen', label:'🖼 Imagen' }
+        { id:'imagen',   label:'🖼 Imagen' }
       ];
       panels = [
         { id:'hooks', html: hooksPanel(d.hooks, null) },
         { id:'caption', html: `
           <div class="hook-item">
             <div class="hook-label">🔥 Hook del caption</div>
-            <div class="hook-text">${c.hook}</div>
+            <div class="hook-text">${s(c.hook)}</div>
           </div>
           <div class="hook-item" style="margin-top:10px;">
             <div class="hook-label">📖 Cuerpo</div>
-            <div class="script-text">${c.cuerpo}</div>
+            <div class="script-text">${s(c.cuerpo)}</div>
           </div>
           <div class="hook-item" style="margin-top:10px;">
             <div class="hook-label">🎯 CTA</div>
-            <div class="hook-text">${c.cta}</div>
+            <div class="hook-text">${s(c.cta)}</div>
           </div>
           <div class="script-meta" style="margin-top:12px;">
-            <div class="meta-item">📝 Longitud: <span>${c.longitud}</span></div>
+            <div class="meta-item">📝 Longitud: <span>${s(c.longitud)}</span></div>
           </div>
-          <button class="btn-copy-full" style="margin-top:14px;" onclick="copiarTexto(this,'${encodeURIComponent(captionTexto)}')">📋 Copiar caption completo</button>` },
+          <button class="btn-copy-full" style="margin-top:14px;" onclick="copiarTexto(this,'${captionTexto}')">📋 Copiar caption completo</button>` },
         { id:'hashtags', html: `
-          <div class="prompt-text">${(d.hashtags||[]).join('  ')}</div>
-          <button class="btn-copy-full" onclick="copiarTexto(this,'${encodeURIComponent(hashtagsTexto)}')">📋 Copiar hashtags</button>` },
+          <div class="prompt-text">${hashtagsArr.join('  ') || '—'}</div>
+          <button class="btn-copy-full" onclick="copiarTexto(this,'${hashtagsTexto}')">📋 Copiar hashtags</button>` },
         { id:'imagen', html: imgPanel(d.imagen) }
       ];
 
     } else {
       // carrusel
-      const slidesTexto = (d.slides||[]).map(s=>`Slide ${s.numero}: ${s.titulo}\n${s.contenido}`).join('\n\n');
+      const slides     = Array.isArray(d.slides) ? d.slides : [];
+      const hashtagsArr = Array.isArray(d.hashtags) ? d.hashtags : [];
+      const slidesTexto = encodeURIComponent(slides.map(s2=>`Slide ${s2.numero}: ${s(s2.titulo)}\n${s(s2.contenido)}`).join('\n\n'));
+      const captionTxt  = encodeURIComponent(s(d.caption) + (hashtagsArr.length ? '\n\n'+hashtagsArr.join(' ') : ''));
       tabs = [
         { id:'titulo', label:'🏷 Título' },
         { id:'slides', label:'📑 Slides' },
@@ -475,36 +496,40 @@
         { id:'titulo', html: `
           <div class="hook-item">
             <div class="hook-label">🏷 Título principal</div>
-            <div class="hook-text" style="font-size:1.15rem;font-weight:800;">${d.titulo||''}</div>
+            <div class="hook-text" style="font-size:1.1rem;font-weight:800;">${s(d.titulo)}</div>
             <div class="hook-actions" style="margin-top:12px;">
-              <button class="btn-copy" onclick="copiarTexto(this,'${encodeURIComponent(d.titulo||'')}')">📋 Copiar</button>
+              <button class="btn-copy" onclick="copiarTexto(this,'${encodeURIComponent(s(d.titulo))}')">📋 Copiar</button>
             </div>
           </div>` },
-        { id:'slides', html: (d.slides||[]).map(s=>`
-          <div class="hook-item" style="margin-bottom:10px;">
-            <div class="hook-label">Slide ${s.numero}</div>
-            <div class="hook-text" style="font-weight:700;margin-bottom:6px;">${s.titulo}</div>
-            <div class="script-text">${s.contenido}</div>
-          </div>`).join('') + `<button class="btn-copy-full" style="margin-top:6px;" onclick="copiarTexto(this,'${encodeURIComponent(slidesTexto)}')">📋 Copiar todos los slides</button>` },
+        { id:'slides', html:
+          (slides.length
+            ? slides.map(sl=>`
+              <div class="hook-item" style="margin-bottom:10px;">
+                <div class="hook-label">Slide ${sl.numero}</div>
+                <div class="hook-text" style="font-weight:700;margin-bottom:6px;">${s(sl.titulo)}</div>
+                <div class="script-text">${s(sl.contenido)}</div>
+              </div>`).join('')
+            : '<p style="color:var(--gray);padding:12px 0">Sin slides generados.</p>'
+          ) + `<button class="btn-copy-full" style="margin-top:6px;" onclick="copiarTexto(this,'${slidesTexto}')">📋 Copiar todos los slides</button>` },
         { id:'caption', html: `
-          <div class="prompt-text">${d.caption||''}</div>
-          <button class="btn-copy-full" onclick="copiarTexto(this,'${encodeURIComponent((d.caption||'') + '\n\n' + (d.hashtags||[]).join(' '))}')">📋 Copiar caption + hashtags</button>
-          <div class="prompt-tags" style="margin-top:14px;">${(d.hashtags||[]).map(h=>`<span class="ptag">${h}</span>`).join('')}</div>` },
+          <div class="prompt-text">${s(d.caption) || '—'}</div>
+          <button class="btn-copy-full" onclick="copiarTexto(this,'${captionTxt}')">📋 Copiar caption + hashtags</button>
+          <div class="prompt-tags" style="margin-top:14px;">${hashtagsArr.map(h=>`<span class="ptag">${s(h)}</span>`).join('')}</div>` },
         { id:'imagen', html: imgPanel(d.imagen) }
       ];
     }
 
-    // Render tabs
+    // Build tabs
     tabsContainer.innerHTML = tabs.map((t,i)=>
       `<button class="tab${i===0?' active':''}" data-tab="${t.id}">${t.label}</button>`
     ).join('');
 
-    // Render panels
+    // Build panels
     tabsContent.innerHTML = panels.map((p,i)=>
       `<div class="tab-panel${i===0?' active':''}" id="tab-${p.id}">${p.html}</div>`
     ).join('');
 
-    // Tab click handlers
+    // Tab click handlers (delegated on fresh tabs)
     tabsContainer.querySelectorAll('.tab').forEach(btn => {
       btn.addEventListener('click', () => {
         tabsContainer.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
@@ -514,10 +539,9 @@
       });
     });
 
-    // Show results and scroll — no layout shift
     const res = document.getElementById('results');
     res.classList.add('show');
-    setTimeout(() => res.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+    setTimeout(() => res.scrollIntoView({ behavior:'smooth', block:'nearest' }), 60);
   }
 
   function copiarTexto(btn, encoded) {
