@@ -3,43 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Desbloquea ContentGen IA — Gratis para la comunidad</title>
+  <title>Desbloquea el Sistema Creador IA — Gratis para la comunidad</title>
   <meta name="description" content="La herramienta IA que genera tu hook, guión de 60 segundos y prompt de imagen en segundos. Gratis para miembros." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23000000'/><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231D4ED8'/><polygon points='50,14 88,82 12,82' fill='%23FFFFFF'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black: #000; --card: #0A0A0A; --border: #1C1C1C;
-      --neon: #A7FF1F; --neon-dk: #8AE000; --neon-gl: rgba(167,255,31,.15);
-      --white: #FFF; --gray: rgba(255,255,255,.55); --muted: rgba(255,255,255,.28);
+      --bg: #FFFFFF; --card: #F8FAFC; --border: #E2E8F0;
+      --blue: #1D4ED8; --blue-dk: #1E40AF; --blue-gl: rgba(29,78,216,.10);
+      --text: #0F172A; --gray: #64748B; --muted: #94A3B8;
     }
-    html, body { min-height:100vh; font-family:'Inter',sans-serif; background:var(--black); color:var(--white); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+    html, body { min-height:100vh; font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
 
-    body::before {
-      content:''; position:fixed; inset:0;
-      background-image: linear-gradient(rgba(167,255,31,.025) 1px,transparent 1px), linear-gradient(90deg,rgba(167,255,31,.025) 1px,transparent 1px);
-      background-size:56px 56px; pointer-events:none; z-index:0;
-    }
-    .glow { position:fixed; width:900px; height:700px; background:radial-gradient(ellipse,rgba(167,255,31,.08) 0%,transparent 65%); top:40%; left:50%; transform:translate(-50%,-50%); pointer-events:none; z-index:0; }
-
-    .wrap { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px 24px 64px; }
+    .wrap { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px 24px 64px; }
 
     /* LOGO */
     .logo { display:flex; flex-direction:column; align-items:center; gap:2px; margin-bottom:36px; }
     .logo-top { font-size:.6rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
-    .logo-main { font-size:.95rem; font-weight:900; }
-    .logo-main span { color:var(--neon); }
+    .logo-main { font-size:.95rem; font-weight:900; color:var(--text); }
+    .logo-main span { color:var(--blue); }
 
     /* CARD */
-    .card { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:48px 44px; width:100%; max-width:540px; display:flex; flex-direction:column; align-items:center; box-shadow:0 0 80px rgba(167,255,31,.06),0 32px 64px rgba(0,0,0,.4); }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:48px 44px; width:100%; max-width:540px; display:flex; flex-direction:column; align-items:center; box-shadow:0 4px 24px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04); }
     @media(max-width:560px){ .card { padding:36px 24px; } }
 
     /* TOOL PREVIEW */
     .tool-preview {
-      background: linear-gradient(135deg, #0D0D0D 0%, #111 100%);
-      border: 1px solid rgba(167,255,31,.2);
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
       border-radius: 16px;
       padding: 16px 20px;
       width: 100%;
@@ -51,50 +44,51 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--neon), #0066FF, var(--neon));
+      height: 3px;
+      background: var(--blue);
+      border-radius: 16px 16px 0 0;
     }
     .tool-name { font-size:.7rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
-    .tool-title { font-size:1.1rem; font-weight:900; margin-bottom:4px; }
-    .tool-title span { color:var(--neon); }
+    .tool-title { font-size:1.1rem; font-weight:900; margin-bottom:4px; color:var(--text); }
+    .tool-title span { color:var(--blue); }
     .tool-desc { font-size:.8rem; color:var(--gray); margin-bottom:14px; }
     .tool-features { display:flex; gap:8px; flex-wrap:wrap; }
-    .feat { font-size:.7rem; font-weight:700; padding:4px 10px; border-radius:6px; border:1px solid var(--border); color:var(--muted); background:rgba(255,255,255,.03); }
-    .feat.active { color:var(--neon); border-color:rgba(167,255,31,.3); background:rgba(167,255,31,.06); }
-    .lock-overlay { display:flex; align-items:center; gap:6px; margin-top:14px; font-size:.75rem; color:var(--muted); }
-    .lock-overlay span { color:var(--neon); font-weight:700; }
+    .feat { font-size:.7rem; font-weight:700; padding:4px 10px; border-radius:6px; border:1px solid var(--border); color:var(--muted); background:#fff; }
+    .feat.active { color:var(--blue); border-color:#93C5FD; background:#DBEAFE; }
+    .lock-overlay { display:flex; align-items:center; gap:6px; margin-top:14px; font-size:.75rem; color:var(--gray); }
+    .lock-overlay span { color:var(--blue); font-weight:700; }
 
     /* BADGE */
-    .badge { display:inline-flex; align-items:center; gap:8px; background:rgba(167,255,31,.07); border:1px solid rgba(167,255,31,.25); color:var(--neon); font-size:.68rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:7px 16px; border-radius:100px; margin-bottom:24px; }
-    .badge-dot { width:6px; height:6px; background:var(--neon); border-radius:50%; animation:pulse 2s ease-in-out infinite; }
+    .badge { display:inline-flex; align-items:center; gap:8px; background:var(--blue-gl); border:1px solid #BFDBFE; color:var(--blue); font-size:.68rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:7px 16px; border-radius:100px; margin-bottom:24px; }
+    .badge-dot { width:6px; height:6px; background:var(--blue); border-radius:50%; animation:pulse 2s ease-in-out infinite; }
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }
 
-    h1 { font-size:clamp(1.6rem,4.5vw,2.2rem); font-weight:900; letter-spacing:-.04em; line-height:1.1; text-align:center; margin-bottom:12px; }
-    h1 span { color:var(--neon); }
+    h1 { font-size:clamp(1.6rem,4.5vw,2.2rem); font-weight:900; letter-spacing:-.04em; line-height:1.1; text-align:center; margin-bottom:12px; color:var(--text); }
+    h1 span { color:var(--blue); }
     .subhead { font-size:.9rem; color:var(--gray); text-align:center; line-height:1.65; max-width:400px; margin-bottom:28px; }
-    .subhead strong { color:var(--white); }
+    .subhead strong { color:var(--text); }
 
     .div { width:100%; height:1px; background:var(--border); margin-bottom:24px; }
 
     /* BULLETS */
     .bullets { width:100%; display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
     .bullet { display:flex; align-items:flex-start; gap:10px; }
-    .bullet-check { width:22px; height:22px; border-radius:7px; background:rgba(167,255,31,.1); border:1px solid rgba(167,255,31,.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-    .bullet-check svg { width:11px; height:11px; stroke:var(--neon); stroke-width:2.5; }
+    .bullet-check { width:22px; height:22px; border-radius:7px; background:#DBEAFE; border:1px solid #93C5FD; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .bullet-check svg { width:11px; height:11px; stroke:var(--blue); stroke-width:2.5; }
     .bullet-text { font-size:.85rem; color:var(--gray); line-height:1.5; }
-    .bullet-text strong { color:var(--white); }
+    .bullet-text strong { color:var(--text); }
 
     /* FORM */
     .form { width:100%; display:flex; flex-direction:column; gap:10px; }
     .input-wrap { position:relative; width:100%; }
     .input-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--muted); display:flex; align-items:center; }
     .input-icon svg { width:16px; height:16px; }
-    input[type="text"], input[type="email"] { width:100%; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:15px 15px 15px 44px; font-family:'Inter',sans-serif; font-size:.9rem; font-weight:500; color:var(--white); outline:none; transition:all .2s; }
+    input[type="text"], input[type="email"] { width:100%; background:#fff; border:1px solid var(--border); border-radius:12px; padding:15px 15px 15px 44px; font-family:'Inter',sans-serif; font-size:.9rem; font-weight:500; color:var(--text); outline:none; transition:all .2s; }
     input::placeholder { color:var(--muted); }
-    input:focus { border-color:rgba(167,255,31,.4); box-shadow:0 0 0 3px rgba(167,255,31,.08); }
+    input:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-gl); }
 
-    .btn-submit { width:100%; background:var(--neon); color:#000; font-family:'Inter',sans-serif; font-size:.95rem; font-weight:900; letter-spacing:.06em; text-transform:uppercase; padding:17px; border-radius:12px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 0 40px rgba(167,255,31,.2),0 4px 20px rgba(0,0,0,.4); transition:all .2s; margin-top:4px; }
-    .btn-submit:hover { background:var(--neon-dk); transform:translateY(-2px); box-shadow:0 0 60px rgba(167,255,31,.35),0 8px 32px rgba(0,0,0,.5); }
+    .btn-submit { width:100%; background:var(--blue); color:#fff; font-family:'Inter',sans-serif; font-size:.95rem; font-weight:900; letter-spacing:.06em; text-transform:uppercase; padding:17px; border-radius:12px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 14px rgba(29,78,216,.35); transition:all .2s; margin-top:4px; }
+    .btn-submit:hover { background:var(--blue-dk); transform:translateY(-2px); box-shadow:0 6px 20px rgba(29,78,216,.45); }
     .btn-submit:disabled { opacity:.5; cursor:not-allowed; transform:none; }
     .btn-submit svg { width:18px; height:18px; flex-shrink:0; }
 
@@ -102,40 +96,39 @@
     .privacy svg { width:12px; height:12px; }
 
     /* SOCIAL PROOF */
-    .social-proof { margin-top:28px; display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:14px 18px; width:100%; }
+    .social-proof { margin-top:28px; display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px 18px; width:100%; }
     .avatars { display:flex; margin-right:4px; }
-    .av { width:28px; height:28px; border-radius:50%; border:2px solid var(--black); display:flex; align-items:center; justify-content:center; font-size:.62rem; font-weight:900; color:#000; margin-left:-8px; flex-shrink:0; }
+    .av { width:28px; height:28px; border-radius:50%; border:2px solid var(--bg); display:flex; align-items:center; justify-content:center; font-size:.62rem; font-weight:900; color:#fff; margin-left:-8px; flex-shrink:0; }
     .av:first-child { margin-left:0; }
-    .av-1{background:var(--neon)} .av-2{background:#6EE7B7} .av-3{background:#93C5FD} .av-4{background:#FCD34D}
+    .av-1{background:#1D4ED8} .av-2{background:#0891B2} .av-3{background:#7C3AED} .av-4{background:#EA580C}
     .proof-text { font-size:.76rem; color:var(--gray); line-height:1.4; }
-    .proof-text strong { color:var(--white); }
+    .proof-text strong { color:var(--text); }
 
     /* SUCCESS STATE */
     .success { display:none; text-align:center; }
     .success.show { display:flex; flex-direction:column; align-items:center; }
     .success-icon { font-size:3rem; margin-bottom:16px; }
-    .success h2 { font-size:1.4rem; font-weight:900; margin-bottom:10px; }
-    .success h2 span { color:var(--neon); }
+    .success h2 { font-size:1.4rem; font-weight:900; margin-bottom:10px; color:var(--text); }
+    .success h2 span { color:var(--blue); }
     .success p { font-size:.88rem; color:var(--gray); margin-bottom:24px; line-height:1.65; max-width:380px; }
-    .btn-skool { display:inline-flex; align-items:center; gap:8px; background:var(--neon); color:#000; font-size:.9rem; font-weight:900; letter-spacing:.05em; text-transform:uppercase; padding:16px 28px; border-radius:12px; text-decoration:none; transition:all .2s; box-shadow:0 0 40px rgba(167,255,31,.25); }
-    .btn-skool:hover { background:var(--neon-dk); transform:translateY(-2px); }
-    .btn-tool { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--white); font-size:.85rem; font-weight:700; padding:13px 24px; border-radius:12px; text-decoration:none; border:1px solid var(--border); transition:all .2s; margin-top:10px; }
-    .btn-tool:hover { border-color:rgba(167,255,31,.4); color:var(--neon); }
+    .btn-skool { display:inline-flex; align-items:center; gap:8px; background:var(--blue); color:#fff; font-size:.9rem; font-weight:900; letter-spacing:.05em; text-transform:uppercase; padding:16px 28px; border-radius:12px; text-decoration:none; transition:all .2s; box-shadow:0 4px 14px rgba(29,78,216,.35); }
+    .btn-skool:hover { background:var(--blue-dk); transform:translateY(-2px); }
+    .btn-tool { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--gray); font-size:.85rem; font-weight:700; padding:13px 24px; border-radius:12px; text-decoration:none; border:1px solid var(--border); transition:all .2s; margin-top:10px; }
+    .btn-tool:hover { border-color:var(--blue); color:var(--blue); }
     .steps-success { display:flex; flex-direction:column; gap:10px; width:100%; margin:20px 0; }
-    .step-s { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-size:.83rem; color:var(--gray); }
-    .step-s-num { width:24px; height:24px; border-radius:50%; background:var(--neon-gl); border:1px solid rgba(167,255,31,.3); color:var(--neon); font-size:.7rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .step-s.done .step-s-num { background:rgba(167,255,31,.2); }
-    .step-s strong { color:var(--white); }
+    .step-s { display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-size:.83rem; color:var(--gray); }
+    .step-s-num { width:24px; height:24px; border-radius:50%; background:var(--blue-gl); border:1px solid #93C5FD; color:var(--blue); font-size:.7rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step-s.done .step-s-num { background:#DCFCE7; border-color:#86EFAC; color:#16A34A; }
+    .step-s strong { color:var(--text); }
   </style>
 </head>
 <body>
-<div class="glow"></div>
 <div class="wrap">
 
   <div class="logo">
-    <svg width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="border-radius:12px;margin-bottom:8px;filter:drop-shadow(0 0 14px rgba(167,255,31,.35));">
-      <rect width="100" height="100" rx="18" fill="#000"/>
-      <polygon points="50,14 88,82 12,82" fill="#A7FF1F"/>
+    <svg width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="border-radius:12px;margin-bottom:8px;">
+      <rect width="100" height="100" rx="18" fill="#1D4ED8"/>
+      <polygon points="50,14 88,82 12,82" fill="#FFFFFF"/>
     </svg>
     <div class="logo-top">Tu Primer Empleado IA</div>
     <div class="logo-main">Sistema <span>Creador</span> IA</div>
@@ -147,7 +140,7 @@
     <!-- PREVIEW DE LA HERRAMIENTA -->
     <div class="tool-preview">
       <div class="tool-name">⚡ Herramienta exclusiva</div>
-      <div class="tool-title">Content<span>Gen</span> IA</div>
+      <div class="tool-title">Sistema <span>Creador</span> IA</div>
       <div class="tool-desc">Hook + Guión 60s + Prompt de imagen — en 15 segundos</div>
       <div class="tool-features">
         <span class="feat active">🔥 3 Hooks virales</span>
@@ -164,7 +157,7 @@
     <div id="form-section" style="width:100%; display:flex; flex-direction:column; align-items:center;">
       <div class="badge"><div class="badge-dot"></div>100% Gratis · Solo para la comunidad</div>
       <h1>Desbloquea la herramienta que <span>crea tu contenido</span></h1>
-      <p class="subhead">Déjame tu email, únete a la comunidad gratis y accede a ContentGen IA — la herramienta que <strong>genera tu hook, guión y prompt de imagen</strong> en segundos.</p>
+      <p class="subhead">Déjame tu email, únete a la comunidad gratis y accede al Sistema Creador IA — la herramienta que <strong>genera tu hook, guión y prompt de imagen</strong> en segundos.</p>
 
       <div class="div"></div>
 
@@ -235,7 +228,7 @@
         </div>
         <div class="step-s">
           <div class="step-s-num">3</div>
-          <div><strong>Usa ContentGen IA</strong> — sin límites</div>
+          <div><strong>Usa el Sistema Creador IA</strong> — sin límites</div>
         </div>
       </div>
 
@@ -270,7 +263,6 @@
       console.error(err);
     }
 
-    // Mostrar success siempre (incluso si hay error de red)
     document.getElementById('form-section').style.display = 'none';
     document.getElementById('success').classList.add('show');
   }
