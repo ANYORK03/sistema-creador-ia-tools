@@ -1,0 +1,8 @@
+{
+  "name": "hookgen-primer-empleado",
+  "version": "1.0.0",
+  "description": "Generador de hooks virales IA - Tu Primer Empleado IA",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}

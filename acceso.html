@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Desbloquea ContentGen IA — Gratis para la comunidad</title>
+  <meta name="description" content="La herramienta IA que genera tu hook, guión de 60 segundos y prompt de imagen en segundos. Gratis para miembros." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23000000'/><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #000; --card: #0A0A0A; --border: #1C1C1C;
+      --neon: #A7FF1F; --neon-dk: #8AE000; --neon-gl: rgba(167,255,31,.15);
+      --white: #FFF; --gray: rgba(255,255,255,.55); --muted: rgba(255,255,255,.28);
+    }
+    html, body { min-height:100vh; font-family:'Inter',sans-serif; background:var(--black); color:var(--white); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+
+    body::before {
+      content:''; position:fixed; inset:0;
+      background-image: linear-gradient(rgba(167,255,31,.025) 1px,transparent 1px), linear-gradient(90deg,rgba(167,255,31,.025) 1px,transparent 1px);
+      background-size:56px 56px; pointer-events:none; z-index:0;
+    }
+    .glow { position:fixed; width:900px; height:700px; background:radial-gradient(ellipse,rgba(167,255,31,.08) 0%,transparent 65%); top:40%; left:50%; transform:translate(-50%,-50%); pointer-events:none; z-index:0; }
+
+    .wrap { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px 24px 64px; }
+
+    /* LOGO */
+    .logo { display:flex; flex-direction:column; align-items:center; gap:2px; margin-bottom:36px; }
+    .logo-top { font-size:.6rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+    .logo-main { font-size:.95rem; font-weight:900; }
+    .logo-main span { color:var(--neon); }
+
+    /* CARD */
+    .card { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:48px 44px; width:100%; max-width:540px; display:flex; flex-direction:column; align-items:center; box-shadow:0 0 80px rgba(167,255,31,.06),0 32px 64px rgba(0,0,0,.4); }
+    @media(max-width:560px){ .card { padding:36px 24px; } }
+
+    /* TOOL PREVIEW */
+    .tool-preview {
+      background: linear-gradient(135deg, #0D0D0D 0%, #111 100%);
+      border: 1px solid rgba(167,255,31,.2);
+      border-radius: 16px;
+      padding: 16px 20px;
+      width: 100%;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .tool-preview::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--neon), #0066FF, var(--neon));
+    }
+    .tool-name { font-size:.7rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+    .tool-title { font-size:1.1rem; font-weight:900; margin-bottom:4px; }
+    .tool-title span { color:var(--neon); }
+    .tool-desc { font-size:.8rem; color:var(--gray); margin-bottom:14px; }
+    .tool-features { display:flex; gap:8px; flex-wrap:wrap; }
+    .feat { font-size:.7rem; font-weight:700; padding:4px 10px; border-radius:6px; border:1px solid var(--border); color:var(--muted); background:rgba(255,255,255,.03); }
+    .feat.active { color:var(--neon); border-color:rgba(167,255,31,.3); background:rgba(167,255,31,.06); }
+    .lock-overlay { display:flex; align-items:center; gap:6px; margin-top:14px; font-size:.75rem; color:var(--muted); }
+    .lock-overlay span { color:var(--neon); font-weight:700; }
+
+    /* BADGE */
+    .badge { display:inline-flex; align-items:center; gap:8px; background:rgba(167,255,31,.07); border:1px solid rgba(167,255,31,.25); color:var(--neon); font-size:.68rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:7px 16px; border-radius:100px; margin-bottom:24px; }
+    .badge-dot { width:6px; height:6px; background:var(--neon); border-radius:50%; animation:pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }
+
+    h1 { font-size:clamp(1.6rem,4.5vw,2.2rem); font-weight:900; letter-spacing:-.04em; line-height:1.1; text-align:center; margin-bottom:12px; }
+    h1 span { color:var(--neon); }
+    .subhead { font-size:.9rem; color:var(--gray); text-align:center; line-height:1.65; max-width:400px; margin-bottom:28px; }
+    .subhead strong { color:var(--white); }
+
+    .div { width:100%; height:1px; background:var(--border); margin-bottom:24px; }
+
+    /* BULLETS */
+    .bullets { width:100%; display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
+    .bullet { display:flex; align-items:flex-start; gap:10px; }
+    .bullet-check { width:22px; height:22px; border-radius:7px; background:rgba(167,255,31,.1); border:1px solid rgba(167,255,31,.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .bullet-check svg { width:11px; height:11px; stroke:var(--neon); stroke-width:2.5; }
+    .bullet-text { font-size:.85rem; color:var(--gray); line-height:1.5; }
+    .bullet-text strong { color:var(--white); }
+
+    /* FORM */
+    .form { width:100%; display:flex; flex-direction:column; gap:10px; }
+    .input-wrap { position:relative; width:100%; }
+    .input-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--muted); display:flex; align-items:center; }
+    .input-icon svg { width:16px; height:16px; }
+    input[type="text"], input[type="email"] { width:100%; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:15px 15px 15px 44px; font-family:'Inter',sans-serif; font-size:.9rem; font-weight:500; color:var(--white); outline:none; transition:all .2s; }
+    input::placeholder { color:var(--muted); }
+    input:focus { border-color:rgba(167,255,31,.4); box-shadow:0 0 0 3px rgba(167,255,31,.08); }
+
+    .btn-submit { width:100%; background:var(--neon); color:#000; font-family:'Inter',sans-serif; font-size:.95rem; font-weight:900; letter-spacing:.06em; text-transform:uppercase; padding:17px; border-radius:12px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 0 40px rgba(167,255,31,.2),0 4px 20px rgba(0,0,0,.4); transition:all .2s; margin-top:4px; }
+    .btn-submit:hover { background:var(--neon-dk); transform:translateY(-2px); box-shadow:0 0 60px rgba(167,255,31,.35),0 8px 32px rgba(0,0,0,.5); }
+    .btn-submit:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+    .btn-submit svg { width:18px; height:18px; flex-shrink:0; }
+
+    .privacy { margin-top:14px; font-size:.7rem; color:var(--muted); text-align:center; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .privacy svg { width:12px; height:12px; }
+
+    /* SOCIAL PROOF */
+    .social-proof { margin-top:28px; display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:14px 18px; width:100%; }
+    .avatars { display:flex; margin-right:4px; }
+    .av { width:28px; height:28px; border-radius:50%; border:2px solid var(--black); display:flex; align-items:center; justify-content:center; font-size:.62rem; font-weight:900; color:#000; margin-left:-8px; flex-shrink:0; }
+    .av:first-child { margin-left:0; }
+    .av-1{background:var(--neon)} .av-2{background:#6EE7B7} .av-3{background:#93C5FD} .av-4{background:#FCD34D}
+    .proof-text { font-size:.76rem; color:var(--gray); line-height:1.4; }
+    .proof-text strong { color:var(--white); }
+
+    /* SUCCESS STATE */
+    .success { display:none; text-align:center; }
+    .success.show { display:flex; flex-direction:column; align-items:center; }
+    .success-icon { font-size:3rem; margin-bottom:16px; }
+    .success h2 { font-size:1.4rem; font-weight:900; margin-bottom:10px; }
+    .success h2 span { color:var(--neon); }
+    .success p { font-size:.88rem; color:var(--gray); margin-bottom:24px; line-height:1.65; max-width:380px; }
+    .btn-skool { display:inline-flex; align-items:center; gap:8px; background:var(--neon); color:#000; font-size:.9rem; font-weight:900; letter-spacing:.05em; text-transform:uppercase; padding:16px 28px; border-radius:12px; text-decoration:none; transition:all .2s; box-shadow:0 0 40px rgba(167,255,31,.25); }
+    .btn-skool:hover { background:var(--neon-dk); transform:translateY(-2px); }
+    .btn-tool { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--white); font-size:.85rem; font-weight:700; padding:13px 24px; border-radius:12px; text-decoration:none; border:1px solid var(--border); transition:all .2s; margin-top:10px; }
+    .btn-tool:hover { border-color:rgba(167,255,31,.4); color:var(--neon); }
+    .steps-success { display:flex; flex-direction:column; gap:10px; width:100%; margin:20px 0; }
+    .step-s { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-size:.83rem; color:var(--gray); }
+    .step-s-num { width:24px; height:24px; border-radius:50%; background:var(--neon-gl); border:1px solid rgba(167,255,31,.3); color:var(--neon); font-size:.7rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step-s.done .step-s-num { background:rgba(167,255,31,.2); }
+    .step-s strong { color:var(--white); }
+  </style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="wrap">
+
+  <div class="logo">
+    <svg width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="border-radius:12px;margin-bottom:8px;filter:drop-shadow(0 0 14px rgba(167,255,31,.35));">
+      <rect width="100" height="100" rx="18" fill="#000"/>
+      <polygon points="50,14 88,82 12,82" fill="#A7FF1F"/>
+    </svg>
+    <div class="logo-top">Tu Primer Empleado IA</div>
+    <div class="logo-main">Sistema <span>Creador</span> IA</div>
+  </div>
+
+  <!-- CARD PRINCIPAL -->
+  <div class="card">
+
+    <!-- PREVIEW DE LA HERRAMIENTA -->
+    <div class="tool-preview">
+      <div class="tool-name">⚡ Herramienta exclusiva</div>
+      <div class="tool-title">Content<span>Gen</span> IA</div>
+      <div class="tool-desc">Hook + Guión 60s + Prompt de imagen — en 15 segundos</div>
+      <div class="tool-features">
+        <span class="feat active">🔥 3 Hooks virales</span>
+        <span class="feat active">🎬 Guión 60s</span>
+        <span class="feat active">🎨 Prompt imagen</span>
+        <span class="feat">5 Plataformas</span>
+      </div>
+      <div class="lock-overlay">
+        🔒 Acceso gratuito para miembros → <span>Desbloquea abajo</span>
+      </div>
+    </div>
+
+    <!-- FORM SECTION -->
+    <div id="form-section" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+      <div class="badge"><div class="badge-dot"></div>100% Gratis · Solo para la comunidad</div>
+      <h1>Desbloquea la herramienta que <span>crea tu contenido</span></h1>
+      <p class="subhead">Déjame tu email, únete a la comunidad gratis y accede a ContentGen IA — la herramienta que <strong>genera tu hook, guión y prompt de imagen</strong> en segundos.</p>
+
+      <div class="div"></div>
+
+      <div class="bullets">
+        <div class="bullet">
+          <div class="bullet-check"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div>
+          <div class="bullet-text"><strong>Hook que para el scroll</strong> — 3 versiones para elegir la mejor</div>
+        </div>
+        <div class="bullet">
+          <div class="bullet-check"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div>
+          <div class="bullet-text"><strong>Guión de 60 segundos</strong> — estructurado con hook, desarrollo y CTA</div>
+        </div>
+        <div class="bullet">
+          <div class="bullet-check"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div>
+          <div class="bullet-text"><strong>Prompt maestro para la imagen</strong> — listo para ChatGPT, DALL-E, Midjourney</div>
+        </div>
+        <div class="bullet">
+          <div class="bullet-check"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div>
+          <div class="bullet-text"><strong>Sin registro de pago</strong> — 100% gratis para siempre</div>
+        </div>
+      </div>
+
+      <form class="form" id="capturaForm" onsubmit="enviarForm(event)">
+        <div class="input-wrap">
+          <div class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <input type="text" id="nombre" placeholder="Tu nombre" required />
+        </div>
+        <div class="input-wrap">
+          <div class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <input type="email" id="email" placeholder="Tu mejor email" required />
+        </div>
+        <button type="submit" class="btn-submit" id="btnSubmit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          DESBLOQUEAR GRATIS
+        </button>
+      </form>
+
+      <div class="privacy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Sin spam. Puedes cancelar cuando quieras.
+      </div>
+
+      <div class="social-proof">
+        <div class="avatars">
+          <div class="av av-1">YM</div>
+          <div class="av av-2">AL</div>
+          <div class="av av-3">CR</div>
+          <div class="av av-4">JP</div>
+        </div>
+        <div class="proof-text"><strong>+847 creadores</strong> ya usan esta herramienta para crear contenido sin bloqueo creativo</div>
+      </div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="success" id="success">
+      <div class="success-icon">⚡</div>
+      <h2>¡Ya casi tienes <span>acceso!</span></h2>
+      <p>Revisa tu email y únete a la comunidad gratuita en Skool. Luego vuelves aquí y la herramienta estará desbloqueada para ti.</p>
+
+      <div class="steps-success">
+        <div class="step-s done">
+          <div class="step-s-num">✓</div>
+          <div><strong>Email registrado</strong> — revisa tu bandeja de entrada</div>
+        </div>
+        <div class="step-s">
+          <div class="step-s-num">2</div>
+          <div><strong>Únete a la comunidad</strong> — gratis, 30 segundos</div>
+        </div>
+        <div class="step-s">
+          <div class="step-s-num">3</div>
+          <div><strong>Usa ContentGen IA</strong> — sin límites</div>
+        </div>
+      </div>
+
+      <a href="https://www.skool.com/sistema-creador-ia-2270/about" class="btn-skool" target="_blank">
+        Unirse a la comunidad gratis →
+      </a>
+      <a href="/index.html" class="btn-tool">
+        ⚡ Ya soy miembro — ir a la herramienta
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  async function enviarForm(e) {
+    e.preventDefault();
+    const nombre = document.getElementById('nombre').value.trim();
+    const email  = document.getElementById('email').value.trim();
+    const btn    = document.getElementById('btnSubmit');
+
+    btn.disabled = true;
+    btn.textContent = 'Registrando...';
+
+    try {
+      await fetch('/api/captura', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email })
+      });
+    } catch(err) {
+      console.error(err);
+    }
+
+    // Mostrar success siempre (incluso si hay error de red)
+    document.getElementById('form-section').style.display = 'none';
+    document.getElementById('success').classList.add('show');
+  }
+</script>
+</body>
+</html>

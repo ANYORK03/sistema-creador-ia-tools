@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ContentGen IA — Hook + Guión + Imagen en segundos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #080808; --card: #0E0E0E; --border: #1A1A1A;
+      --blue: #0066FF; --blue-l: #338BFF; --blue-glow: rgba(0,102,255,.22);
+      --neon: #00FF87; --neon-glow: rgba(0,255,135,.18);
+      --white: #FFF; --gray: rgba(255,255,255,.55); --gray-s: rgba(255,255,255,.28);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--white); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: var(--black); } ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 4px; }
+
+    /* NAV */
+    nav { display:flex; align-items:center; justify-content:space-between; padding:14px 32px; border-bottom:1px solid var(--border); background:rgba(8,8,8,.96); backdrop-filter:blur(12px); position:sticky; top:0; z-index:100; }
+    .nav-left { display:flex; align-items:center; gap:12px; }
+    .nav-brand-wrap { display:flex; flex-direction:column; gap:1px; }
+    .nav-brand-top { font-size:.55rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--gray-s); }
+    .nav-brand-main { font-size:.95rem; font-weight:900; letter-spacing:-.01em; line-height:1; }
+    .nav-brand-main span { color:var(--neon); }
+    .nav-badge { font-size:.68rem; font-weight:700; background:var(--blue-glow); color:var(--blue-l); border:1px solid var(--blue); padding:3px 10px; border-radius:20px; letter-spacing:.04em; }
+    .nav-right { font-size:.78rem; color:var(--gray-s); }
+    .nav-right a { color:var(--neon); text-decoration:none; font-weight:600; }
+
+    /* HERO */
+    .hero { text-align:center; padding:60px 24px 40px; max-width:680px; margin:0 auto; }
+    .hero-tag { display:inline-flex; align-items:center; gap:6px; font-size:.75rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--neon); border:1px solid rgba(0,255,135,.25); padding:5px 14px; border-radius:20px; background:rgba(0,255,135,.06); margin-bottom:20px; }
+    .hero h1 { font-size:clamp(1.9rem,4.5vw,3rem); font-weight:900; line-height:1.1; margin-bottom:14px; }
+    .hero h1 em { color:var(--neon); font-style:normal; }
+    .hero p { font-size:.98rem; color:var(--gray); }
+
+    /* STEPS */
+    .steps { display:flex; justify-content:center; gap:8px; padding:0 24px 32px; flex-wrap:wrap; }
+    .step { display:flex; align-items:center; gap:6px; font-size:.78rem; color:var(--gray-s); }
+    .step-num { width:22px; height:22px; border-radius:50%; background:var(--blue-glow); border:1px solid var(--blue); color:var(--blue-l); font-size:.7rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step-arrow { color:var(--border); font-size:.9rem; }
+
+    /* CARD */
+    .wrap { max-width:760px; margin:0 auto; padding:0 20px 80px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:20px; }
+
+    /* PLATFORMS */
+    .platforms { display:flex; gap:8px; flex-wrap:wrap; }
+    .plat-btn { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:#111; color:var(--gray); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .plat-btn:hover { border-color:var(--blue); color:var(--white); }
+    .plat-btn.active { background:var(--blue-glow); border-color:var(--blue); color:var(--blue-l); }
+
+    /* FORM */
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media(max-width:580px){ .grid2 { grid-template-columns:1fr; } }
+    .field { display:flex; flex-direction:column; gap:6px; margin-bottom:0; }
+    .field.full { grid-column:1/-1; }
+    label { font-size:.75rem; font-weight:700; color:var(--gray); text-transform:uppercase; letter-spacing:.05em; }
+    input, select, textarea { background:#111; border:1px solid var(--border); border-radius:10px; color:var(--white); font-family:inherit; font-size:.93rem; padding:11px 14px; outline:none; transition:border-color .2s; }
+    input:focus, select:focus, textarea:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-glow); }
+    textarea { resize:vertical; min-height:80px; }
+    select option { background:#111; }
+
+    /* SECTION LABEL */
+    .sec-label { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--gray-s); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* BTN */
+    .btn-gen { width:100%; padding:15px; background:var(--blue); color:#fff; font-size:.98rem; font-weight:800; border:none; border-radius:12px; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:20px; }
+    .btn-gen:hover { background:var(--blue-l); transform:translateY(-1px); }
+    .btn-gen:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+
+    /* LOADING */
+    .loading { display:none; text-align:center; padding:48px; }
+    .loading.show { display:block; }
+    .spinner { width:38px; height:38px; border:3px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 16px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loading p { color:var(--gray); font-size:.92rem; }
+    .loading small { color:var(--gray-s); font-size:.78rem; }
+
+    /* RESULTADO TABS */
+    .res-card { display:none; }
+    .res-card.show { display:block; }
+    .tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:24px; }
+    .tab { padding:10px 20px; font-size:.83rem; font-weight:700; cursor:pointer; color:var(--gray-s); border-bottom:2px solid transparent; transition:all .2s; }
+    .tab:hover { color:var(--white); }
+    .tab.active { color:var(--neon); border-bottom-color:var(--neon); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* HOOK CARDS */
+    .hook-item { background:#111; border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:10px; transition:border-color .2s; }
+    .hook-item:hover { border-color:var(--blue-l); }
+    .hook-label { font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--neon); margin-bottom:8px; }
+    .hook-text { font-size:.97rem; line-height:1.65; margin-bottom:12px; }
+    .hook-actions { display:flex; gap:8px; align-items:center; }
+    .btn-copy { font-size:.75rem; font-weight:700; padding:5px 12px; border-radius:6px; cursor:pointer; background:var(--blue-glow); color:var(--blue-l); border:1px solid var(--blue); transition:all .2s; }
+    .btn-copy:hover { background:var(--blue); color:#fff; }
+    .btn-copy.ok { background:var(--neon-glow); color:var(--neon); border-color:var(--neon); }
+    .tag-tipo { font-size:.72rem; color:var(--gray-s); background:var(--border); padding:3px 10px; border-radius:6px; }
+
+    /* GUION */
+    .script-block { background:#111; border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; }
+    .script-section { margin-bottom:18px; }
+    .script-section:last-child { margin-bottom:0; }
+    .script-title { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px; }
+    .script-title.hook { color:var(--neon); }
+    .script-title.desarrollo { color:var(--blue-l); }
+    .script-title.cta { color:#FF8800; }
+    .script-text { font-size:.93rem; line-height:1.7; color:var(--white); }
+    .script-meta { display:flex; gap:12px; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); flex-wrap:wrap; }
+    .meta-item { font-size:.75rem; color:var(--gray-s); display:flex; align-items:center; gap:5px; }
+    .meta-item span { color:var(--white); font-weight:600; }
+    .btn-copy-full { margin-top:14px; font-size:.8rem; font-weight:700; padding:8px 18px; border-radius:8px; cursor:pointer; background:var(--blue-glow); color:var(--blue-l); border:1px solid var(--blue); transition:all .2s; }
+    .btn-copy-full:hover { background:var(--blue); color:#fff; }
+
+    /* PROMPT IMAGEN */
+    .prompt-block { background:#111; border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
+    .prompt-intro { font-size:.82rem; color:var(--gray); margin-bottom:14px; line-height:1.6; }
+    .prompt-text { font-size:.88rem; line-height:1.75; color:var(--white); background:#0A0A0A; border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; font-family: monospace; white-space: pre-wrap; }
+    .prompt-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+    .ptag { font-size:.7rem; font-weight:600; padding:3px 10px; border-radius:6px; background:rgba(0,102,255,.1); color:var(--blue-l); border:1px solid var(--blue-glow); }
+
+    /* TIPS */
+    .tips-box { background:rgba(0,255,135,.04); border:1px solid rgba(0,255,135,.14); border-radius:10px; padding:16px 20px; margin-top:16px; }
+    .tips-title { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--neon); margin-bottom:10px; }
+    .tips-list { list-style:none; display:flex; flex-direction:column; gap:7px; }
+    .tips-list li { font-size:.85rem; color:var(--gray); display:flex; gap:8px; }
+    .tips-list li::before { content:"→"; color:var(--neon); flex-shrink:0; }
+
+    /* REGEN */
+    .res-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+    .res-title { font-size:.95rem; font-weight:800; }
+    .res-title span { color:var(--neon); }
+    .btn-regen { font-size:.75rem; font-weight:600; color:var(--gray); background:none; border:1px solid var(--border); padding:5px 12px; border-radius:7px; cursor:pointer; transition:all .2s; }
+    .btn-regen:hover { border-color:var(--blue); color:var(--white); }
+
+    /* COUNTER */
+    .counter { display:flex; justify-content:center; gap:32px; padding:14px; border-bottom:1px solid var(--border); background:rgba(0,102,255,.03); flex-wrap:wrap; }
+    .cnt-item { text-align:center; }
+    .cnt-num { font-size:1.3rem; font-weight:900; color:var(--neon); }
+    .cnt-lbl { font-size:.65rem; color:var(--gray-s); text-transform:uppercase; letter-spacing:.05em; }
+
+    footer { text-align:center; padding:36px 24px; color:var(--gray-s); font-size:.78rem; border-top:1px solid var(--border); }
+    footer a { color:var(--neon); text-decoration:none; font-weight:600; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <svg width="34" height="34" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;border-radius:9px;">
+      <rect width="100" height="100" rx="18" fill="#000"/>
+      <polygon points="50,14 88,82 12,82" fill="#A7FF1F"/>
+    </svg>
+    <div class="nav-brand-wrap">
+      <div class="nav-brand-top">Tu Primer Empleado IA</div>
+      <div class="nav-brand-main">Sistema <span>Creador</span> IA</div>
+    </div>
+    <span class="nav-badge">BETA</span>
+  </div>
+  <div class="nav-right">Por <a href="#">York Martínez</a> · Tu Primer Empleado IA</div>
+</nav>
+
+<div class="counter">
+  <div class="cnt-item"><div class="cnt-num" id="cnt-total">0</div><div class="cnt-lbl">Contenidos creados</div></div>
+  <div class="cnt-item"><div class="cnt-num">3 en 1</div><div class="cnt-lbl">Hook + Guión + Imagen</div></div>
+  <div class="cnt-item"><div class="cnt-num">&lt;15s</div><div class="cnt-lbl">Por generación</div></div>
+</div>
+
+<div class="hero">
+  <div class="hero-tag">⚡ Sistema completo de contenido IA</div>
+  <h1>De idea a contenido <em>listo para publicar</em></h1>
+  <p>Completa el formulario una vez y obtén tu hook, guión de 60 segundos y prompt para la imagen del post.</p>
+</div>
+
+<div class="steps">
+  <div class="step"><div class="step-num">1</div> Describe tu contenido</div>
+  <div class="step-arrow">›</div>
+  <div class="step"><div class="step-num">2</div> La IA genera todo</div>
+  <div class="step-arrow">›</div>
+  <div class="step"><div class="step-num">3</div> Copia y publica</div>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <!-- Plataforma -->
+    <div class="sec-label">Plataforma</div>
+    <div class="platforms" style="margin-bottom:24px;">
+      <button class="plat-btn active" data-p="TikTok">🎵 TikTok</button>
+      <button class="plat-btn" data-p="Instagram Reels">📸 Reels</button>
+      <button class="plat-btn" data-p="YouTube Shorts">▶️ Shorts</button>
+      <button class="plat-btn" data-p="LinkedIn">💼 LinkedIn</button>
+      <button class="plat-btn" data-p="Twitter/X">𝕏 Twitter</button>
+    </div>
+
+    <!-- Datos del contenido -->
+    <div class="sec-label">Tu contenido</div>
+    <div class="grid2" style="margin-bottom:14px;">
+      <div class="field">
+        <label>Nicho o industria</label>
+        <input type="text" id="nicho" placeholder="ej. Marketing digital, Fitness, IA..." />
+      </div>
+      <div class="field">
+        <label>Audiencia objetivo</label>
+        <input type="text" id="audiencia" placeholder="ej. Emprendedores latinos 25-40..." />
+      </div>
+      <div class="field full">
+        <label>¿De qué trata el contenido?</label>
+        <textarea id="tema" placeholder="ej. Cómo usar ChatGPT para crear contenido 10x más rápido sin perder tu voz personal..."></textarea>
+      </div>
+    </div>
+
+    <!-- Estilo -->
+    <div class="sec-label">Estilo</div>
+    <div class="grid2" style="margin-bottom:4px;">
+      <div class="field">
+        <label>Tipo de hook</label>
+        <select id="tipo">
+          <option value="curiosidad">🤔 Curiosidad / Intriga</option>
+          <option value="controversia">🔥 Controversia</option>
+          <option value="dato sorprendente">📊 Dato sorprendente</option>
+          <option value="historia personal">📖 Historia personal</option>
+          <option value="problema del audiencia">😤 Problema del audiencia</option>
+          <option value="promesa de resultado">✅ Promesa de resultado</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tono de voz</label>
+        <select id="tono">
+          <option value="directo y confrontacional">💥 Directo y confrontacional</option>
+          <option value="educativo y claro">📚 Educativo y claro</option>
+          <option value="inspiracional">🚀 Inspiracional</option>
+          <option value="conversacional y cercano">💬 Conversacional</option>
+          <option value="urgente">⚡ Urgente</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>CTA final</label>
+        <select id="cta">
+          <option value="seguir la cuenta">👆 Seguir la cuenta</option>
+          <option value="comentar algo específico">💬 Comentar algo</option>
+          <option value="guardar el video">🔖 Guardar el video</option>
+          <option value="visitar el link en bio">🔗 Link en bio</option>
+          <option value="compartir con alguien">📤 Compartir</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Estilo visual del post</label>
+        <select id="visual">
+          <option value="minimalista oscuro con tipografía bold">🖤 Minimalista oscuro</option>
+          <option value="vibrante con colores neón y contraste alto">🌈 Vibrante / Neón</option>
+          <option value="corporativo profesional limpio">💼 Corporativo</option>
+          <option value="lifestyle natural con persona real">📸 Lifestyle</option>
+          <option value="infografía moderna con iconos">📊 Infografía</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-gen" id="btnGen" onclick="generar()">
+      ⚡ Generar Hook + Guión + Prompt de Imagen
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Generando tu sistema de contenido completo...</p>
+    <small>Hook · Guión 60s · Prompt de imagen</small>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div class="card res-card" id="results">
+    <div class="res-header">
+      <div class="res-title">✅ Contenido <span>listo para publicar</span></div>
+      <button class="btn-regen" onclick="generar()">↻ Regenerar</button>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="hooks">🔥 Hooks (3)</div>
+      <div class="tab" data-tab="guion">🎬 Guión 60s</div>
+      <div class="tab" data-tab="imagen">🎨 Prompt Imagen</div>
+    </div>
+
+    <!-- TAB HOOKS -->
+    <div class="tab-panel active" id="tab-hooks">
+      <div id="hooks-list"></div>
+      <div class="tips-box" id="hooks-tips"></div>
+    </div>
+
+    <!-- TAB GUION -->
+    <div class="tab-panel" id="tab-guion">
+      <div class="script-block" id="guion-content"></div>
+    </div>
+
+    <!-- TAB IMAGEN -->
+    <div class="tab-panel" id="tab-imagen">
+      <div class="prompt-block" id="imagen-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="border-radius:9px;margin-bottom:10px;">
+    <rect width="100" height="100" rx="18" fill="#000"/>
+    <polygon points="50,14 88,82 12,82" fill="#A7FF1F"/>
+  </svg><br/>
+  <div style="font-size:.58rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:2px;">Tu Primer Empleado IA</div>
+  <div style="font-size:.88rem; font-weight:900; margin-bottom:12px;">Sistema <span style="color:#A7FF1F;">Creador</span> IA</div>
+  Construido con IA · <a href="#">Tu Primer Empleado IA</a> · York Martínez<br/>
+  <span style="margin-top:6px; display:block;">
+    ¿Quieres aprender a construir herramientas como esta? → <a href="#">Únete al programa</a>
+  </span>
+</footer>
+
+<script>
+  let plataforma = 'TikTok';
+  let total = parseInt(localStorage.getItem('cgTotal') || '0');
+  document.getElementById('cnt-total').textContent = total;
+
+  // Plataforma
+  document.querySelectorAll('.plat-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.plat-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      plataforma = b.dataset.p;
+    });
+  });
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+    });
+  });
+
+  async function generar() {
+    const nicho    = document.getElementById('nicho').value.trim();
+    const tema     = document.getElementById('tema').value.trim();
+    const audiencia = document.getElementById('audiencia').value.trim();
+    const tipo     = document.getElementById('tipo').value;
+    const tono     = document.getElementById('tono').value;
+    const cta      = document.getElementById('cta').value;
+    const visual   = document.getElementById('visual').value;
+
+    if (!nicho || !tema) { alert('Completa al menos el nicho y el tema.'); return; }
+
+    document.getElementById('btnGen').disabled = true;
+    document.getElementById('loading').classList.add('show');
+    document.getElementById('results').classList.remove('show');
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nicho, tema, audiencia, tipo, tono, cta, visual, plataforma })
+      });
+      if (!res.ok) throw new Error('Error servidor');
+      const data = await res.json();
+      renderResultados(data);
+      total++;
+      localStorage.setItem('cgTotal', total);
+      document.getElementById('cnt-total').textContent = total;
+    } catch(e) {
+      alert('Error generando contenido. Intenta de nuevo.');
+      console.error(e);
+    } finally {
+      document.getElementById('btnGen').disabled = false;
+      document.getElementById('loading').classList.remove('show');
+    }
+  }
+
+  function renderResultados(d) {
+    // HOOKS
+    const hooksList = document.getElementById('hooks-list');
+    hooksList.innerHTML = '';
+    d.hooks.forEach((h, i) => {
+      hooksList.innerHTML += `
+        <div class="hook-item">
+          <div class="hook-label">Hook #${i+1} · ${h.tipo}</div>
+          <div class="hook-text">${h.texto}</div>
+          <div class="hook-actions">
+            <button class="btn-copy" onclick="copiar(this,'${encodeURIComponent(h.texto)}')">📋 Copiar</button>
+            <span class="tag-tipo">⏱ ${h.duracion}</span>
+          </div>
+        </div>`;
+    });
+    document.getElementById('hooks-tips').innerHTML = `
+      <div class="tips-title">💡 Tips para estos hooks</div>
+      <ul class="tips-list">${d.tipshooks.map(t=>`<li>${t}</li>`).join('')}</ul>`;
+
+    // GUION
+    const g = d.guion;
+    document.getElementById('guion-content').innerHTML = `
+      <div class="script-section">
+        <div class="script-title hook">🔥 HOOK (0-5 seg)</div>
+        <div class="script-text">${g.hook}</div>
+      </div>
+      <div class="script-section">
+        <div class="script-title desarrollo">📖 DESARROLLO (5-50 seg)</div>
+        <div class="script-text">${g.desarrollo}</div>
+      </div>
+      <div class="script-section">
+        <div class="script-title cta">🎯 CTA (50-60 seg)</div>
+        <div class="script-text">${g.cta}</div>
+      </div>
+      <div class="script-meta">
+        <div class="meta-item">⏱ Duración estimada: <span>${g.duracion}</span></div>
+        <div class="meta-item">📝 Palabras aprox: <span>${g.palabras}</span></div>
+        <div class="meta-item">🎵 Ritmo: <span>${g.ritmo}</span></div>
+      </div>
+      <button class="btn-copy-full" onclick="copiarGuion()">📋 Copiar guión completo</button>`;
+
+    // PROMPT IMAGEN
+    const img = d.imagen;
+    document.getElementById('imagen-content').innerHTML = `
+      <div class="prompt-intro">${img.instruccion}</div>
+      <div class="prompt-tags">${img.herramientas.map(h=>`<span class="ptag">${h}</span>`).join('')}</div>
+      <div class="prompt-text" id="prompt-texto">${img.prompt}</div>
+      <button class="btn-copy-full" onclick="copiar(this,'${encodeURIComponent(img.prompt)}')">📋 Copiar prompt</button>
+      <div class="tips-box" style="margin-top:16px;">
+        <div class="tips-title">🎨 Notas de diseño</div>
+        <ul class="tips-list">${img.notas.map(n=>`<li>${n}</li>`).join('')}</ul>
+      </div>`;
+
+    document.getElementById('results').classList.add('show');
+    document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'start' });
+
+    // Activar tab hooks
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    document.querySelector('[data-tab="hooks"]').classList.add('active');
+    document.getElementById('tab-hooks').classList.add('active');
+  }
+
+  function copiar(btn, encoded) {
+    navigator.clipboard.writeText(decodeURIComponent(encoded)).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✅ Copiado';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 2000);
+    });
+  }
+
+  function copiarGuion() {
+    const g = document.getElementById('guion-content');
+    const texto = g.innerText;
+    navigator.clipboard.writeText(texto).then(() => {
+      const btn = g.querySelector('.btn-copy-full');
+      btn.textContent = '✅ Copiado';
+      setTimeout(() => btn.textContent = '📋 Copiar guión completo', 2000);
+    });
+  }
+</script>
+</body>
+</html>
