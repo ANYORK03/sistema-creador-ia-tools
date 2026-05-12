@@ -6,66 +6,143 @@ export default async function handler(req, res) {
   if (!nicho || !tema)
     return res.status(400).json({ error: "Faltan campos requeridos" });
 
-  const prompt = `Eres el sistema de contenido IA de York Martínez — "Tu Primer Empleado IA".
-Tu trabajo es generar contenido viral en español para creadores y emprendedores latinos.
+  const aud = audiencia || "emprendedores y creadores de contenido latinos";
+  const esCarrusel = plataforma === "Carrusel de Instagram";
+  const esPost = plataforma === "Post de Instagram";
+  const esVideo = !esCarrusel && !esPost;
+
+  let prompt;
+
+  if (esVideo) {
+    prompt = `Eres el sistema de contenido IA de York Martínez — "Tu Primer Empleado IA".
+Genera contenido viral en español para ${plataforma}.
 
 DATOS:
-- Plataforma: ${plataforma}
 - Nicho: ${nicho}
-- Audiencia: ${audiencia || "emprendedores y creadores de contenido latinos"}
+- Audiencia: ${aud}
 - Tema: ${tema}
 - Tipo de hook: ${tipo}
-- Tono de voz: ${tono}
-- CTA deseado: ${cta}
+- Tono: ${tono}
+- CTA: ${cta}
 - Estilo visual: ${visual}
 
-Genera el sistema completo de contenido respondiendo ÚNICAMENTE con este JSON válido, sin texto adicional antes ni después:
+Responde ÚNICAMENTE con este JSON válido, sin texto adicional:
 
 {
+  "tipo": "video",
   "hooks": [
-    {
-      "texto": "hook completo, máximo 3 oraciones cortas, sin emoji al inicio",
-      "tipo": "nombre del estilo (ej: Controversia, Miedo a perder, Dato duro)",
-      "duracion": "3-5 seg"
-    },
-    {
-      "texto": "hook diferente al anterior, mismo tema distinto ángulo",
-      "tipo": "nombre del estilo",
-      "duracion": "4-6 seg"
-    },
-    {
-      "texto": "tercer hook con ángulo completamente diferente",
-      "tipo": "nombre del estilo",
-      "duracion": "3-5 seg"
-    }
+    {"texto": "hook #1 para video, máximo 2 oraciones impactantes", "tipo": "estilo del hook", "duracion": "3-5 seg"},
+    {"texto": "hook #2 diferente ángulo", "tipo": "estilo del hook", "duracion": "4-6 seg"},
+    {"texto": "hook #3 ángulo completamente distinto", "tipo": "estilo del hook", "duracion": "3-5 seg"}
   ],
   "tipshooks": [
-    "tip específico para usar estos hooks en ${plataforma}",
-    "tip sobre cómo entregar el hook con la voz y energía correcta",
-    "tip sobre qué NO decir en los primeros 3 segundos"
+    "tip para entregar este hook en ${plataforma}",
+    "tip sobre energía y voz en los primeros 3 segundos",
+    "tip sobre qué NO decir al inicio"
   ],
   "guion": {
-    "hook": "Los primeros 5 segundos — usa el mejor hook adaptado para hablar a cámara",
-    "desarrollo": "El cuerpo del guión (5-50 segundos). Mínimo 3 puntos concretos. Lenguaje conversacional. Frases cortas. Pausas con '...'",
-    "cta": "Los últimos 10 segundos — llamada a la acción clara para ${cta}. Directa y sin rodeos.",
+    "hook": "primeros 5 segundos hablando a cámara",
+    "desarrollo": "cuerpo 5-50 seg. 3 puntos concretos. Frases cortas. Pausas con '...'",
+    "cta": "últimos 10 seg — acción clara para ${cta}",
     "duracion": "55-60 segundos",
     "palabras": "130-150 palabras",
     "ritmo": "Rápido y dinámico"
   },
   "imagen": {
-    "instruccion": "Copia este prompt y pégalo en ChatGPT, DALL-E, Midjourney o Canva IA. Está en español:",
+    "instruccion": "Copia este prompt y pégalo en ChatGPT, DALL-E o Canva IA:",
     "herramientas": ["ChatGPT / DALL-E", "Midjourney", "Canva IA", "Adobe Firefly"],
-    "prompt": "Prompt completo en español para generar la imagen del post. Incluye composición, colores basados en '${visual}', ambiente, iluminación, estilo, formato 1:1 para post o 9:16 para reels. Específico para el nicho '${nicho}'. Mínimo 80 palabras.",
+    "prompt": "prompt completo en español para la miniatura o portada del video. Estilo ${visual}. Nicho: ${nicho}. Formato 9:16. Mínimo 60 palabras.",
     "notas": [
-      "nota sobre los colores que más convierten en ${plataforma} para este nicho",
-      "nota sobre si incluir texto en la imagen",
-      "nota sobre el formato recomendado para este contenido"
+      "tip sobre colores que convierten en ${plataforma}",
+      "tip sobre si incluir texto en pantalla",
+      "tip sobre el formato recomendado"
     ]
   }
 }`;
+  } else if (esPost) {
+    prompt = `Eres el sistema de contenido IA de York Martínez — "Tu Primer Empleado IA".
+Genera contenido para un Post de Instagram en español.
+
+DATOS:
+- Nicho: ${nicho}
+- Audiencia: ${aud}
+- Tema: ${tema}
+- Tipo de hook: ${tipo}
+- Tono: ${tono}
+- CTA: ${cta}
+- Estilo visual: ${visual}
+
+Responde ÚNICAMENTE con este JSON válido, sin texto adicional:
+
+{
+  "tipo": "post",
+  "hooks": [
+    {"texto": "primera línea del caption que para el scroll, máximo 1 oración", "tipo": "estilo", "duracion": "lectura 2 seg"},
+    {"texto": "variante 2 del caption hook", "tipo": "estilo", "duracion": "lectura 2 seg"},
+    {"texto": "variante 3 completamente diferente", "tipo": "estilo", "duracion": "lectura 2 seg"}
+  ],
+  "caption": {
+    "hook": "primera línea impactante del caption",
+    "cuerpo": "desarrollo del caption en 3-5 párrafos cortos. Lenguaje conversacional. Emojis estratégicos. Contar historia o dar valor real.",
+    "cta": "llamada a acción para ${cta}. Directa y sin rodeos.",
+    "longitud": "150-200 palabras"
+  },
+  "hashtags": ["#hashtag1", "#hashtag2", "#hashtag3", "#hashtag4", "#hashtag5", "#hashtag6", "#hashtag7", "#hashtag8", "#hashtag9", "#hashtag10"],
+  "imagen": {
+    "instruccion": "Copia este prompt y pégalo en ChatGPT, DALL-E o Canva IA:",
+    "herramientas": ["ChatGPT / DALL-E", "Canva IA", "Adobe Firefly"],
+    "prompt": "prompt completo en español para el post de Instagram. Estilo ${visual}. Nicho: ${nicho}. Formato 1:1. Mínimo 60 palabras.",
+    "notas": [
+      "tip sobre colores y estética para el feed de Instagram",
+      "tip sobre si incluir texto en la imagen",
+      "tip sobre la primera impresión visual"
+    ]
+  }
+}`;
+  } else {
+    // Carrusel
+    prompt = `Eres el sistema de contenido IA de York Martínez — "Tu Primer Empleado IA".
+Genera contenido para un Carrusel de Instagram en español.
+
+DATOS:
+- Nicho: ${nicho}
+- Audiencia: ${aud}
+- Tema: ${tema}
+- Tipo de hook: ${tipo}
+- Tono: ${tono}
+- CTA: ${cta}
+- Estilo visual: ${visual}
+
+Responde ÚNICAMENTE con este JSON válido, sin texto adicional:
+
+{
+  "tipo": "carrusel",
+  "titulo": "título principal del carrusel — primera diapositiva, máximo 8 palabras, que genere curiosidad",
+  "slides": [
+    {"numero": 1, "titulo": "Portada — igual al título principal", "contenido": "subtítulo o gancho de 1 línea"},
+    {"numero": 2, "titulo": "título slide 2, máximo 6 palabras", "contenido": "desarrollo en 2-3 líneas cortas"},
+    {"numero": 3, "titulo": "título slide 3", "contenido": "desarrollo en 2-3 líneas cortas"},
+    {"numero": 4, "titulo": "título slide 4", "contenido": "desarrollo en 2-3 líneas cortas"},
+    {"numero": 5, "titulo": "título slide 5", "contenido": "desarrollo en 2-3 líneas cortas"},
+    {"numero": 6, "titulo": "título slide 6", "contenido": "desarrollo en 2-3 líneas cortas"},
+    {"numero": 7, "titulo": "CTA final", "contenido": "acción concreta para ${cta}. Directa."}
+  ],
+  "caption": "caption corto para acompañar el carrusel. 2-3 líneas. Con emoji y CTA para guardar o compartir.",
+  "hashtags": ["#hashtag1", "#hashtag2", "#hashtag3", "#hashtag4", "#hashtag5"],
+  "imagen": {
+    "instruccion": "Copia este prompt para diseñar la portada del carrusel en Canva o DALL-E:",
+    "herramientas": ["Canva", "ChatGPT / DALL-E", "Adobe Firefly"],
+    "prompt": "prompt completo en español para la portada del carrusel. Estilo ${visual}. Nicho: ${nicho}. Formato 1:1. Texto de portada visible. Mínimo 60 palabras.",
+    "notas": [
+      "tip sobre tipografía y contraste para carruseles de Instagram",
+      "tip sobre consistencia visual entre slides",
+      "tip para que el primer slide genere curiosidad y haga deslizar"
+    ]
+  }
+}`;
+  }
 
   const apiKey = process.env.GROQ_API_KEY;
-  console.log("KEY presente:", !!apiKey, "| longitud:", apiKey ? apiKey.length : 0);
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -81,7 +158,7 @@ Genera el sistema completo de contenido respondiendo ÚNICAMENTE con este JSON v
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1500,
+        max_tokens: 2500,
         temperature: 0.8,
       }),
     });
@@ -89,8 +166,8 @@ Genera el sistema completo de contenido respondiendo ÚNICAMENTE con este JSON v
 
     if (!response.ok) {
       const errBody = await response.text();
-      console.error("Groq HTTP error:", response.status, errBody);
-      throw new Error(`Groq ${response.status}: ${errBody}`);
+      console.error("Groq error:", response.status, errBody);
+      throw new Error(`Groq ${response.status}`);
     }
 
     const data = await response.json();
@@ -102,8 +179,7 @@ Genera el sistema completo de contenido respondiendo ÚNICAMENTE con este JSON v
     return res.status(200).json(result);
   } catch (err) {
     clearTimeout(timeout);
-    console.error("ERROR COMPLETO:", err.message);
+    console.error("ERROR:", err.message);
     return res.status(500).json({ error: "Error generando contenido. Intenta de nuevo." });
   }
 }
-

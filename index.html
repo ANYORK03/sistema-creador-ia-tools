@@ -390,7 +390,10 @@
     let tabs = [];
     let panels = [];
 
-    if (d.tipo === 'video') {
+    // Detect type by actual fields (not just d.tipo) — LLM sometimes ignores tipo field
+    const tipoReal = d.slides ? 'carrusel' : (d.guion ? 'video' : (d.caption && d.caption.hook ? 'post' : (d.tipo || 'video')));
+
+    if (tipoReal === 'video') {
       const g = d.guion;
       const guionTexto = `HOOK:\n${g.hook}\n\nDESARROLLO:\n${g.desarrollo}\n\nCTA:\n${g.cta}`;
       tabs = [
@@ -424,7 +427,7 @@
         { id:'imagen', html: imgPanel(d.imagen) }
       ];
 
-    } else if (d.tipo === 'post') {
+    } else if (tipoReal === 'post') {
       const c = d.caption;
       const captionTexto = `${c.hook}\n\n${c.cuerpo}\n\n${c.cta}`;
       const hashtagsTexto = (d.hashtags || []).join(' ');
