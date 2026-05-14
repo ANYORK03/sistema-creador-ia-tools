@@ -272,7 +272,18 @@
     <button class="btn-gen" id="btnGen" onclick="generar()">
       ⚡ Generar contenido
     </button>
-    <div id="uso-badge" style="display:none;margin-top:10px;text-align:center;font-size:.72rem;color:var(--gray-s);font-weight:600;"></div>
+
+    <div id="uso-badge" style="display:none;margin-top:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:10px 16px;">
+        <span style="font-size:.78rem;color:var(--gray);font-weight:600;">Generaciones hoy</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div id="uso-bar-wrap" style="width:80px;height:6px;background:var(--border);border-radius:10px;overflow:hidden;">
+            <div id="uso-bar" style="height:100%;background:var(--blue);border-radius:10px;transition:width .4s;width:0%"></div>
+          </div>
+          <span id="uso-texto" style="font-size:.78rem;font-weight:800;color:var(--blue);white-space:nowrap;"></span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- LOADING -->
@@ -377,13 +388,19 @@
 
       renderResultados(data);
 
-      // Mostrar generaciones restantes si la API las devuelve
+      // Mostrar contador de generaciones
       if (data._uso) {
-        const { quedan, limite } = data._uso;
-        const el = document.getElementById('uso-badge');
-        if (el) {
-          el.textContent = `${quedan} de ${limite} generaciones restantes hoy`;
-          el.style.display = 'inline-flex';
+        const { usadas, limite, quedan } = data._uso;
+        const badge = document.getElementById('uso-badge');
+        const bar   = document.getElementById('uso-bar');
+        const texto = document.getElementById('uso-texto');
+        if (badge && bar && texto) {
+          badge.style.display = 'block';
+          const pct = Math.round((usadas / limite) * 100);
+          bar.style.width = pct + '%';
+          bar.style.background = quedan <= 3 ? '#EF4444' : quedan <= 7 ? '#F97316' : 'var(--blue)';
+          texto.style.color    = quedan <= 3 ? '#EF4444' : quedan <= 7 ? '#F97316' : 'var(--blue)';
+          texto.textContent    = quedan > 0 ? `${quedan} de ${limite} restantes` : '0 restantes — vuelve mañana';
         }
       }
 
