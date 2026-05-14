@@ -91,9 +91,9 @@ GUIÓN — reglas estrictas:
 - Pausas dramáticas con "..."
 - Palabras de énfasis en MAYÚSCULAS
 - Arranca directo con el hook elegido. Cero saludos, cero presentaciones.
-- Desarrollo: 3 puntos CONCRETOS con ejemplos reales del nicho ${nicho}. Sin frases de relleno.
+- Desarrollo: MÍNIMO 5 puntos concretos con ejemplos reales del nicho ${nicho}. Cada punto tiene su explicación, su ejemplo específico y por qué importa. Sin frases de relleno. Este es el cuerpo más largo del guión.
 - CTA: instrucción directa para "${cta}". Urgencia real. 2-3 frases.
-- guion_completo: TODO el guión seguido (hook + desarrollo + cta). Sin títulos ni secciones. Solo las palabras que se dicen. Mínimo 150 palabras, máximo 180. Listo para copiar en teleprompter.
+- guion_completo: TODO el guión seguido (hook + desarrollo + cta). Sin títulos ni secciones. Solo las palabras que se dicen. MÍNIMO 250 palabras, máximo 320. Si terminas antes de 250 palabras, NO has terminado — sigue desarrollando. Listo para copiar en teleprompter.
 
 DESCRIPCIÓN para Instagram:
 - Línea 1: el hook más fuerte de los 3
@@ -114,7 +114,7 @@ Devuelve este JSON exacto:
     "desarrollo": "",
     "cta": "",
     "guion_completo": "",
-    "duracion": "60-70 segundos",
+    "duracion": "90-120 segundos",
     "palabras": ""
   },
   "descripcion": ""
@@ -139,7 +139,7 @@ Devuelve este JSON exacto:
           { role: "system", content: sistema },
           { role: "user",   content: prompt  }
         ],
-        max_tokens: 2000,
+        max_tokens: 2800,
         temperature: 0.9,
       }),
     });
