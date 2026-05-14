@@ -363,6 +363,37 @@
     }
   }
 
+  // Almacén de textos a copiar — evita pasar texto por atributos HTML (rompe con comillas/saltos)
+  const _copy = {};
+  let _copyIdx = 0;
+  function regCopy(text) {
+    const k = 'c' + (_copyIdx++);
+    _copy[k] = text;
+    return k;
+  }
+
+  // Listener único delegado para todos los botones de copiar
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-copy-key]');
+    if (!btn) return;
+    const text = _copy[btn.dataset.copyKey] || '';
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✅ Copiado';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 2000);
+    });
+  });
+
+  function cpBtn(label, text, extraClass) {
+    const k = regCopy(text);
+    return `<button class="btn-copy-full${extraClass ? ' ' + extraClass : ''}" data-copy-key="${k}">${label}</button>`;
+  }
+  function cpBtnSmall(label, text) {
+    const k = regCopy(text);
+    return `<button class="btn-copy" data-copy-key="${k}">${label}</button>`;
+  }
+
   function renderResultados(d) {
     const tc = document.getElementById('tabs-container');
     const tp = document.getElementById('tabs-content');
@@ -370,98 +401,90 @@
     tp.innerHTML = '';
 
     const sv = v => (v != null ? String(v) : '');
+    const esc = v => sv(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
     const esPost = plataforma === 'Post';
-
     let tabs, panels;
 
     if (esPost) {
-      // POST: Caption · Hashtags · Imagen
-      const cap = d.caption || {};
+      const cap  = d.caption || {};
       const tags = Array.isArray(d.hashtags) ? d.hashtags : [];
-      const img  = d.imagen || {};
-      const capTxt = encodeURIComponent(`${sv(cap.hook)}\n\n${sv(cap.cuerpo)}\n\n${sv(cap.cta)}`);
-      const tagTxt = encodeURIComponent(tags.join(' '));
-      const imgTxt = encodeURIComponent(sv(img.prompt));
+      const img  = d.imagen  || {};
 
-      tabs   = ['✍️ Caption','# Hashtags','🖼 Imagen'];
+      tabs = ['✍️ Caption','# Hashtags','🖼 Imagen'];
       panels = [
         `<div class="hook-item">
           <div class="hook-label">🔥 Primera línea (hook)</div>
-          <div class="hook-text">${sv(cap.hook)}</div>
+          <div class="hook-text">${esc(cap.hook)}</div>
         </div>
         <div class="hook-item" style="margin-top:10px;">
           <div class="hook-label">📖 Cuerpo</div>
-          <div class="script-text">${sv(cap.cuerpo)}</div>
+          <div class="script-text">${esc(cap.cuerpo)}</div>
         </div>
         <div class="hook-item" style="margin-top:10px;">
           <div class="hook-label">🎯 CTA</div>
-          <div class="hook-text">${sv(cap.cta)}</div>
+          <div class="hook-text">${esc(cap.cta)}</div>
         </div>
-        <button class="btn-copy-full" style="margin-top:14px;" onclick="copiarTexto(this,'${capTxt}')">📋 Copiar caption completo</button>`,
+        ${cpBtn('📋 Copiar caption completo', `${sv(cap.hook)}\n\n${sv(cap.cuerpo)}\n\n${sv(cap.cta)}`)}`,
 
         `<div class="prompt-text">${tags.join('  ') || '—'}</div>
-        <button class="btn-copy-full" onclick="copiarTexto(this,'${tagTxt}')">📋 Copiar hashtags</button>`,
+        ${cpBtn('📋 Copiar hashtags', tags.join(' '))}`,
 
-        `<div class="prompt-intro">${sv(img.instruccion)}</div>
-        <div class="prompt-tags">${(img.herramientas||[]).map(h=>`<span class="ptag">${sv(h)}</span>`).join('')}</div>
-        <div class="prompt-text">${sv(img.prompt)}</div>
-        <button class="btn-copy-full" onclick="copiarTexto(this,'${imgTxt}')">📋 Copiar prompt</button>`
+        `<div class="prompt-intro">${esc(img.instruccion)}</div>
+        <div class="prompt-tags">${(img.herramientas||[]).map(h=>`<span class="ptag">${esc(h)}</span>`).join('')}</div>
+        <div class="prompt-text">${esc(img.prompt)}</div>
+        ${cpBtn('📋 Copiar prompt de imagen', sv(img.prompt))}`
       ];
 
     } else {
-      // REELS: Hooks · Guión · Descripción
       const hooks = Array.isArray(d.hooks) ? d.hooks : [];
       const g     = d.guion || {};
-      const teleprompter = sv(g.guion_completo) || `${sv(g.hook)}\n\n${sv(g.desarrollo)}\n\n${sv(g.cta)}`;
-      const guionTxt = encodeURIComponent(teleprompter);
-      const descTxt  = encodeURIComponent(sv(d.descripcion));
+      const guionFull = sv(g.guion_completo) || `${sv(g.hook)}\n\n${sv(g.desarrollo)}\n\n${sv(g.cta)}`;
 
-      tabs   = ['🎣 Hooks','📜 Guión','📝 Descripción'];
+      tabs = ['🎣 Hooks','📜 Guión','📝 Descripción'];
       panels = [
         hooks.map((h,i)=>`
           <div class="hook-item">
             <div class="hook-label">Hook #${i+1}</div>
-            <div class="hook-text">${sv(h.texto)}</div>
+            <div class="hook-text">${esc(h.texto)}</div>
             <div class="hook-actions">
-              <button class="btn-copy" onclick="copiarTexto(this,'${encodeURIComponent(sv(h.texto))}')">📋 Copiar</button>
-              ${h.duracion ? `<span class="tag-tipo">⏱ ${sv(h.duracion)}</span>` : ''}
+              ${cpBtnSmall('📋 Copiar', sv(h.texto))}
+              ${h.duracion ? `<span class="tag-tipo">⏱ ${esc(h.duracion)}</span>` : ''}
             </div>
           </div>`).join('') || '<p style="color:var(--gray)">Sin hooks.</p>',
 
         `<div class="script-block">
           <div class="teleprompter-block">
             <div class="teleprompter-label">📺 GUIÓN COMPLETO — listo para teleprompter</div>
-            <div class="teleprompter-text">${sv(g.guion_completo) || (sv(g.hook) + '\n\n' + sv(g.desarrollo) + '\n\n' + sv(g.cta))}</div>
-            <button class="btn-copy-full btn-teleprompter" onclick="copiarTexto(this,'${guionTxt}')">📋 Copiar todo el guión</button>
+            <div class="teleprompter-text">${esc(guionFull)}</div>
+            ${cpBtn('📋 Copiar todo el guión', guionFull, 'btn-teleprompter')}
           </div>
           <div class="script-meta" style="margin-top:16px;">
-            <div class="meta-item">⏱ <span>${sv(g.duracion)}</span></div>
-            <div class="meta-item">📝 <span>${sv(g.palabras)}</span></div>
+            <div class="meta-item">⏱ <span>${esc(g.duracion)}</span></div>
+            <div class="meta-item">📝 <span>${esc(g.palabras)}</span></div>
           </div>
           <details style="margin-top:16px;">
             <summary style="cursor:pointer;color:var(--gray);font-size:13px;">Ver por secciones ▾</summary>
             <div class="script-section" style="margin-top:12px;">
-              <div class="script-title hook">🔥 HOOK (0-5 seg)</div>
-              <div class="script-text">${sv(g.hook)}</div>
+              <div class="script-title hook">🔥 HOOK</div>
+              <div class="script-text">${esc(g.hook)}</div>
             </div>
             <div class="script-section">
               <div class="script-title desarrollo">📖 DESARROLLO</div>
-              <div class="script-text">${sv(g.desarrollo)}</div>
+              <div class="script-text">${esc(g.desarrollo)}</div>
             </div>
             <div class="script-section">
               <div class="script-title cta">🎯 CTA</div>
-              <div class="script-text">${sv(g.cta)}</div>
+              <div class="script-text">${esc(g.cta)}</div>
             </div>
           </details>
         </div>`,
 
-        `<div class="prompt-text">${sv(d.descripcion) || '—'}</div>
-        <button class="btn-copy-full" onclick="copiarTexto(this,'${descTxt}')">📋 Copiar descripción</button>`
+        `<div class="prompt-text">${esc(d.descripcion) || '—'}</div>
+        ${cpBtn('📋 Copiar descripción', sv(d.descripcion))}`
       ];
     }
 
-    // Render
     tc.innerHTML = tabs.map((t,i)=>
       `<button class="tab${i===0?' active':''}" data-tab="${i}">${t}</button>`
     ).join('');
@@ -481,19 +504,6 @@
     const res = document.getElementById('results');
     res.classList.add('show');
     setTimeout(() => res.scrollIntoView({ behavior:'smooth', block:'nearest' }), 60);
-  }
-
-  function copiarTexto(btn, encoded) {
-    copiar(btn, encoded);
-  }
-
-  function copiar(btn, encoded) {
-    navigator.clipboard.writeText(decodeURIComponent(encoded)).then(() => {
-      const orig = btn.textContent;
-      btn.textContent = '✅ Copiado';
-      btn.classList.add('ok');
-      setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 2000);
-    });
   }
 
 </script>
