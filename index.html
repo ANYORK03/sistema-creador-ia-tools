@@ -105,6 +105,13 @@
     .btn-copy.ok { background:#DCFCE7; color:#16A34A; border-color:#86EFAC; }
     .tag-tipo { font-size:.72rem; color:var(--gray-s); background:var(--border); padding:3px 10px; border-radius:6px; }
 
+    /* TELEPROMPTER */
+    .teleprompter-block { background:#0a0a0a; border:1px solid #2a2a2a; border-radius:10px; padding:18px 20px; margin-bottom:4px; }
+    .teleprompter-label { font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#3ECF6A; margin-bottom:12px; }
+    .teleprompter-text { font-size:1.05rem; line-height:1.85; color:#f0f0f0; white-space:pre-wrap; word-break:break-word; font-family:'Courier New',monospace; }
+    .btn-teleprompter { background:linear-gradient(135deg,#3ECF6A,#22a855); color:#000; font-weight:800; margin-top:16px; width:100%; }
+    .btn-teleprompter:hover { opacity:.9; }
+
     /* GUION */
     .script-block { background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; }
     .script-section { margin-bottom:18px; }
@@ -169,23 +176,23 @@
 </nav>
 
 <div class="counter">
-  <div class="cnt-item"><div class="cnt-num" id="cnt-total">0</div><div class="cnt-lbl">Contenidos creados</div></div>
-  <div class="cnt-item"><div class="cnt-num">3 en 1</div><div class="cnt-lbl">Hook + Guión + Imagen</div></div>
-  <div class="cnt-item"><div class="cnt-num">&lt;15s</div><div class="cnt-lbl">Por generación</div></div>
+  <div class="cnt-item"><div class="cnt-num" id="cnt-total">0</div><div class="cnt-lbl">Contenidos generados</div></div>
+  <div class="cnt-item"><div class="cnt-num">Reels</div><div class="cnt-lbl">Hook + Guión + Descripción</div></div>
+  <div class="cnt-item"><div class="cnt-num">Post</div><div class="cnt-lbl">Caption + Hashtags + Imagen</div></div>
 </div>
 
 <div class="hero">
-  <div class="hero-tag">⚡ Sistema completo de contenido IA</div>
-  <h1>De idea a contenido <em>listo para publicar</em></h1>
-  <p>Completa el formulario una vez y obtén tu hook, guión de 60 segundos y prompt para la imagen del post.</p>
+  <div class="hero-tag">⚡ Para creadores hispanos que quieren publicar hoy</div>
+  <h1>Deja de quedarte en blanco.<br><em>La IA escribe por ti.</em></h1>
+  <p>Escribe tu nicho y tu tema — obtienes hooks reales, un guión completo listo para grabar y el caption para el post.</p>
 </div>
 
 <div class="steps">
-  <div class="step"><div class="step-num">1</div> Describe tu contenido</div>
+  <div class="step"><div class="step-num">1</div> Escribe tu nicho y tema</div>
   <div class="step-arrow">›</div>
-  <div class="step"><div class="step-num">2</div> La IA genera todo</div>
+  <div class="step"><div class="step-num">2</div> La IA crea el contenido</div>
   <div class="step-arrow">›</div>
-  <div class="step"><div class="step-num">3</div> Copia y publica</div>
+  <div class="step"><div class="step-num">3</div> Copia, graba y publica</div>
 </div>
 
 <div class="wrap">
@@ -397,7 +404,8 @@
       // REELS: Hooks · Guión · Descripción
       const hooks = Array.isArray(d.hooks) ? d.hooks : [];
       const g     = d.guion || {};
-      const guionTxt = encodeURIComponent(`HOOK:\n${sv(g.hook)}\n\nDESARROLLO:\n${sv(g.desarrollo)}\n\nCTA:\n${sv(g.cta)}`);
+      const teleprompter = sv(g.guion_completo) || `${sv(g.hook)}\n\n${sv(g.desarrollo)}\n\n${sv(g.cta)}`;
+      const guionTxt = encodeURIComponent(teleprompter);
       const descTxt  = encodeURIComponent(sv(d.descripcion));
 
       tabs   = ['🎣 Hooks','📜 Guión','📝 Descripción'];
@@ -413,23 +421,30 @@
           </div>`).join('') || '<p style="color:var(--gray)">Sin hooks.</p>',
 
         `<div class="script-block">
-          <div class="script-section">
-            <div class="script-title hook">🔥 HOOK (0-5 seg)</div>
-            <div class="script-text">${sv(g.hook)}</div>
+          <div class="teleprompter-block">
+            <div class="teleprompter-label">📺 GUIÓN COMPLETO — listo para teleprompter</div>
+            <div class="teleprompter-text">${sv(g.guion_completo) || (sv(g.hook) + '\n\n' + sv(g.desarrollo) + '\n\n' + sv(g.cta))}</div>
+            <button class="btn-copy-full btn-teleprompter" onclick="copiarTexto(this,'${guionTxt}')">📋 Copiar todo el guión</button>
           </div>
-          <div class="script-section">
-            <div class="script-title desarrollo">📖 DESARROLLO</div>
-            <div class="script-text">${sv(g.desarrollo)}</div>
-          </div>
-          <div class="script-section">
-            <div class="script-title cta">🎯 CTA</div>
-            <div class="script-text">${sv(g.cta)}</div>
-          </div>
-          <div class="script-meta">
+          <div class="script-meta" style="margin-top:16px;">
             <div class="meta-item">⏱ <span>${sv(g.duracion)}</span></div>
             <div class="meta-item">📝 <span>${sv(g.palabras)}</span></div>
           </div>
-          <button class="btn-copy-full" onclick="copiarTexto(this,'${guionTxt}')">📋 Copiar guión completo</button>
+          <details style="margin-top:16px;">
+            <summary style="cursor:pointer;color:var(--gray);font-size:13px;">Ver por secciones ▾</summary>
+            <div class="script-section" style="margin-top:12px;">
+              <div class="script-title hook">🔥 HOOK (0-5 seg)</div>
+              <div class="script-text">${sv(g.hook)}</div>
+            </div>
+            <div class="script-section">
+              <div class="script-title desarrollo">📖 DESARROLLO</div>
+              <div class="script-text">${sv(g.desarrollo)}</div>
+            </div>
+            <div class="script-section">
+              <div class="script-title cta">🎯 CTA</div>
+              <div class="script-text">${sv(g.cta)}</div>
+            </div>
+          </details>
         </div>`,
 
         `<div class="prompt-text">${sv(d.descripcion) || '—'}</div>
