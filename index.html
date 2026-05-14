@@ -267,9 +267,12 @@
       </div>
     </div>
 
+    <div id="error-msg" style="display:none;background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;border-radius:10px;padding:12px 16px;font-size:.85rem;font-weight:600;margin-bottom:10px;line-height:1.5;"></div>
+
     <button class="btn-gen" id="btnGen" onclick="generar()">
       ⚡ Generar contenido
     </button>
+    <div id="uso-badge" style="display:none;margin-top:10px;text-align:center;font-size:.72rem;color:var(--gray-s);font-weight:600;"></div>
   </div>
 
   <!-- LOADING -->
@@ -343,24 +346,70 @@
     document.getElementById('results').classList.remove('show');
 
     try {
-      const res = await fetch('/api/generate', {
+      const res  = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nicho, tema, audiencia, tipo, tono, cta, visual, plataforma })
       });
-      if (!res.ok) throw new Error('Error servidor');
       const data = await res.json();
+
+      if (res.status === 401) {
+        // Sin sesión — redirigir al registro
+        mostrarError('Necesitas registrarte para usar la herramienta.', true);
+        return;
+      }
+      if (res.status === 429) {
+        mostrarError(data.error || 'Límite alcanzado. Intenta más tarde.');
+        return;
+      }
+      if (res.status === 503) {
+        mostrarError(data.error || 'Servidor ocupado. Espera 10 segundos e intenta de nuevo.');
+        return;
+      }
+      if (res.status === 504) {
+        mostrarError(data.error || 'La generación tardó demasiado. Intenta de nuevo.');
+        return;
+      }
+      if (!res.ok) {
+        mostrarError(data.error || 'Error generando contenido. Intenta de nuevo.');
+        return;
+      }
+
       renderResultados(data);
+
+      // Mostrar generaciones restantes si la API las devuelve
+      if (data._uso) {
+        const { quedan, limite } = data._uso;
+        const el = document.getElementById('uso-badge');
+        if (el) {
+          el.textContent = `${quedan} de ${limite} generaciones restantes hoy`;
+          el.style.display = 'inline-flex';
+        }
+      }
+
       total++;
       localStorage.setItem('cgTotal', total);
       document.getElementById('cnt-total').textContent = total;
+
     } catch(e) {
-      alert('Error generando contenido. Intenta de nuevo.');
+      mostrarError('Error de conexión. Revisa tu internet e intenta de nuevo.');
       console.error(e);
     } finally {
       document.getElementById('btnGen').disabled = false;
       document.getElementById('loading').classList.remove('show');
     }
+  }
+
+  function mostrarError(msg, redirigir) {
+    const el = document.getElementById('error-msg');
+    if (!el) { alert(msg); return; }
+    el.style.display = 'block';
+    if (redirigir) {
+      el.innerHTML = msg + ' <a href="/acceso" style="color:var(--blue);font-weight:700;">Regístrate aquí →</a>';
+    } else {
+      el.textContent = msg;
+    }
+    setTimeout(() => { el.style.display = 'none'; }, 8000);
   }
 
   // Almacén de textos a copiar — evita pasar texto por atributos HTML (rompe con comillas/saltos)

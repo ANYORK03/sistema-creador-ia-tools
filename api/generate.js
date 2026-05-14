@@ -1,15 +1,73 @@
-export default async function handler(req, res) {
-  if (req.method !== "POST")
-    return res.status(405).json({ error: "Method not allowed" });
+import { verifyPayload, signPayload, todayUTC, DAILY_LIMIT } from './auth.js';
 
+// ─── Rate limit por IP (respaldo secundario, en memoria por instancia) ────────
+const ipMap = new Map(); // ip → { count, resetAt }
+const IP_LIMIT  = 30;   // máx requests por IP por hora
+const IP_WINDOW = 60 * 60 * 1000;
+
+function checkIP(ip) {
+  const now  = Date.now();
+  const entry = ipMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    ipMap.set(ip, { count: 1, resetAt: now + IP_WINDOW });
+    return true;
+  }
+  if (entry.count >= IP_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
+// ─── Leer cookie del header ───────────────────────────────────────────────────
+function getCookie(req, name) {
+  const header = req.headers.cookie || '';
+  const match  = header.split(';').map(c => c.trim()).find(c => c.startsWith(name + '='));
+  return match ? match.slice(name.length + 1) : null;
+}
+
+// ─── Handler principal ────────────────────────────────────────────────────────
+export default async function handler(req, res) {
+  if (req.method !== 'POST')
+    return res.status(405).json({ error: 'Method not allowed' });
+
+  // 1. Verificar sesión (cookie firmada)
+  const cookieVal = getCookie(req, '_scia');
+  if (!cookieVal) {
+    return res.status(401).json({ error: 'Regístrate para usar la herramienta.', redirect: '/acceso' });
+  }
+
+  let session = verifyPayload(cookieVal);
+  if (!session) {
+    return res.status(401).json({ error: 'Sesión inválida. Regístrate de nuevo.', redirect: '/acceso' });
+  }
+
+  // 2. Resetear contador si es un día nuevo
+  const today = todayUTC();
+  if (session.date !== today) {
+    session = { ...session, date: today, count: 0 };
+  }
+
+  // 3. Límite diario por usuario
+  if (session.count >= DAILY_LIMIT) {
+    return res.status(429).json({
+      error: `Alcanzaste el límite de ${DAILY_LIMIT} generaciones por día. Vuelve mañana.`
+    });
+  }
+
+  // 4. Rate limit por IP
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
+  if (!checkIP(ip)) {
+    return res.status(429).json({ error: 'Demasiadas solicitudes. Espera unos minutos.' });
+  }
+
+  // ─── Datos del formulario ─────────────────────────────────────────────────
   const { nicho, tema, audiencia, tipo, tono, cta, visual, plataforma } = req.body;
   if (!nicho || !tema)
-    return res.status(400).json({ error: "Faltan campos requeridos" });
+    return res.status(400).json({ error: 'Faltan campos requeridos' });
 
-  const aud = audiencia || "emprendedores y creadores de contenido latinos";
-  const esPost = plataforma === "Post";
+  const aud    = audiencia || 'emprendedores y creadores de contenido latinos';
+  const esPost = plataforma === 'Post';
 
-  // ─── SISTEMA (separado del prompt) ───────────────────────────────────────
+  // ─── SISTEMA ──────────────────────────────────────────────────────────────
   const sistema = `Eres el mejor copywriter de Instagram y TikTok para creadores hispanos.
 Escribes contenido que se siente REAL — como si lo escribiera alguien que vive ese nicho todos los días, no una IA.
 
@@ -25,7 +83,7 @@ REGLAS QUE NUNCA PUEDES VIOLAR:
   let prompt;
 
   if (esPost) {
-    // ─── POST ──────────────────────────────────────────────────────────────
+    // ─── POST ────────────────────────────────────────────────────────────────
     prompt = `Crea el contenido completo para un post de Instagram.
 
 DATOS:
@@ -67,7 +125,7 @@ Devuelve este JSON exacto:
 }`;
 
   } else {
-    // ─── REELS ─────────────────────────────────────────────────────────────
+    // ─── REELS ───────────────────────────────────────────────────────────────
     prompt = `Escribe el contenido completo para un Reel de Instagram/TikTok.
 
 DATOS:
@@ -121,23 +179,24 @@ Devuelve este JSON exacto:
 }`;
   }
 
-  const apiKey = process.env.GROQ_API_KEY;
+  // ─── Llamada a Groq ───────────────────────────────────────────────────────
+  const apiKey    = process.env.GROQ_API_KEY;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 9000);
+  const timeout    = setTimeout(() => controller.abort(), 9000);
 
   try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
       signal: controller.signal,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: 'llama-3.3-70b-versatile',
         messages: [
-          { role: "system", content: sistema },
-          { role: "user",   content: prompt  }
+          { role: 'system', content: sistema },
+          { role: 'user',   content: prompt  },
         ],
         max_tokens: 2800,
         temperature: 0.9,
@@ -145,22 +204,44 @@ Devuelve este JSON exacto:
     });
     clearTimeout(timeout);
 
+    // Manejo explícito de rate limit de Groq
+    if (response.status === 429) {
+      return res.status(503).json({ error: 'El servidor está ocupado. Espera 10 segundos e intenta de nuevo.' });
+    }
+
     if (!response.ok) {
       const errBody = await response.text();
-      console.error("Groq error:", response.status, errBody);
+      console.error('Groq error:', response.status, errBody);
       throw new Error(`Groq ${response.status}`);
     }
 
-    const data = await response.json();
-    const raw = data.choices[0].message.content.trim();
+    const data  = await response.json();
+    const raw   = data.choices[0].message.content.trim();
     const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("JSON no encontrado");
+    if (!match) throw new Error('JSON no encontrado');
 
     const result = JSON.parse(match[0]);
-    return res.status(200).json(result);
+
+    // 5. Incrementar contador y renovar cookie
+    session.count += 1;
+    const newCookie = signPayload(session);
+    const maxAge    = 60 * 60 * 24 * 60;
+    res.setHeader('Set-Cookie',
+      `_scia=${newCookie}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`
+    );
+
+    // Devolver resultado + info de uso al frontend
+    return res.status(200).json({
+      ...result,
+      _uso: { usadas: session.count, limite: DAILY_LIMIT, quedan: DAILY_LIMIT - session.count }
+    });
+
   } catch (err) {
     clearTimeout(timeout);
-    console.error("ERROR:", err.message);
-    return res.status(500).json({ error: "Error generando contenido. Intenta de nuevo." });
+    console.error('ERROR:', err.message);
+    if (err.name === 'AbortError') {
+      return res.status(504).json({ error: 'La generación tardó demasiado. Intenta de nuevo.' });
+    }
+    return res.status(500).json({ error: 'Error generando contenido. Intenta de nuevo.' });
   }
 }
