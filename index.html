@@ -255,7 +255,7 @@
           <option value="compartir con alguien">📤 Compartir</option>
         </select>
       </div>
-      <div class="field">
+      <div class="field" id="field-visual">
         <label>Estilo visual del post</label>
         <select id="visual">
           <option value="minimalista oscuro con tipografía bold">🖤 Minimalista oscuro</option>
@@ -305,9 +305,17 @@
 </footer>
 
 <script>
-  let plataforma = 'TikTok';
+  let plataforma = 'Reels';
   let total = parseInt(localStorage.getItem('cgTotal') || '0');
   document.getElementById('cnt-total').textContent = total;
+
+  function actualizarUI() {
+    const esPost = plataforma === 'Post';
+    document.getElementById('field-visual').style.display = esPost ? '' : 'none';
+    document.getElementById('loading').querySelector('small').textContent =
+      esPost ? 'Caption · Hashtags · Imagen' : 'Hooks · Guión · Descripción';
+  }
+  actualizarUI();
 
   // Plataforma
   document.querySelectorAll('.plat-btn').forEach(b => {
@@ -315,6 +323,7 @@
       document.querySelectorAll('.plat-btn').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
       plataforma = b.dataset.p;
+      actualizarUI();
     });
   });
 

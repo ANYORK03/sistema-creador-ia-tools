@@ -9,12 +9,26 @@ export default async function handler(req, res) {
   const aud = audiencia || "emprendedores y creadores de contenido latinos";
   const esPost = plataforma === "Post";
 
+  // ─── SISTEMA (separado del prompt) ───────────────────────────────────────
+  const sistema = `Eres el mejor copywriter de Instagram y TikTok para creadores hispanos.
+Escribes contenido que se siente REAL — como si lo escribiera alguien que vive ese nicho todos los días, no una IA.
+
+REGLAS QUE NUNCA PUEDES VIOLAR:
+1. NADA genérico. Cada línea debe referirse al nicho exacto con situaciones concretas.
+2. NADA de openers muertos: "¿Sabías que...?", "Hoy quiero hablarte de...", "En el mundo de hoy...", "Es importante que..."
+3. NADA de frases motivacionales vacías: "el éxito es un proceso", "confía en ti mismo", "tú puedes lograrlo"
+4. NADA de porcentajes inventados que no se puedan creer ("el 99% de las personas...")
+5. USA el lenguaje exacto del nicho — si es fitness: PR, bulk, macros, AMRAP. Si es marketing: CTR, funnel, retención, copy. Si es finanzas: flujo de caja, margen, ROI. Si es otro nicho: habla como alguien que lo vive.
+6. El dolor en los hooks tiene que ser ESPECÍFICO. No "te cuesta crear contenido" — sino "llevas 3 semanas con el mismo borrador sin publicar"
+7. Responde SOLO con JSON válido. Sin texto adicional. Sin markdown. Sin comentarios.`;
+
   let prompt;
 
   if (esPost) {
-    prompt = `Eres un copywriter experto en Instagram para emprendedores hispanos. Tu trabajo es escribir captions que generan engagement real — no genéricos, no corporativos, sino contenido que siente que lo escribió una persona real con experiencia.
+    // ─── POST ──────────────────────────────────────────────────────────────
+    prompt = `Crea el contenido completo para un post de Instagram.
 
-DATOS DEL CONTENIDO:
+DATOS:
 - Nicho: ${nicho}
 - Audiencia: ${aud}
 - Tema: ${tema}
@@ -23,38 +37,38 @@ DATOS DEL CONTENIDO:
 - CTA: ${cta}
 - Estilo visual: ${visual}
 
-REGLAS OBLIGATORIAS:
-- El hook es la primera línea — tiene que parar el scroll en 2 segundos. Usa tensión, dato específico, pregunta incómoda o afirmación polémica. NUNCA empieces con "¿Sabías que...?" ni "Hoy quiero hablarte de..."
-- El cuerpo cuenta una historia corta O entrega 3 puntos de valor concretos con ejemplos reales del nicho. Nada de generalidades.
-- Usa el lenguaje exacto que usa la audiencia — informal, directo, con emojis naturales (no decorativos).
-- El CTA es una sola instrucción clara. Sin "si te gustó" ni "no olvides".
-- Los hashtags: 5 de nicho específico + 3 de tema + 2 masivos.
+CAPTION — reglas:
+- Hook: primera línea que para el scroll en 2 segundos. Máximo 10 palabras. Tensión real, dato que duela o afirmación que genere "¿qué?". Específico para el nicho "${nicho}" — no sirve para cualquier post.
+- Cuerpo: historia corta de 3-4 párrafos O 3 puntos concretos con ejemplos reales del nicho. Con emojis donde tienen sentido. Lenguaje del avatar, no de blog corporativo. Mínimo 100 palabras.
+- CTA: una sola instrucción directa para "${cta}". Sin "si te gustó" ni "no olvides dar like". Máximo 12 palabras.
 
-Responde ÚNICAMENTE con este JSON válido, sin texto adicional, sin markdown:
+HASHTAGS: 5 nicho específico + 3 tema + 2 masivos.
 
+IMAGEN — el prompt debe estar en español y ser visual concreto:
+- Describe qué se ve en la imagen, no qué debe transmitir
+- Estilo: ${visual}
+- Formato cuadrado 1:1, alta resolución, paleta coherente con ${nicho}
+- Incluye 3 notas tácticas específicas para este nicho (colores, texto superpuesto, elemento principal)
+
+Devuelve este JSON exacto:
 {
   "caption": {
-    "hook": "primera línea — máximo 12 palabras, específica para ${nicho}, tono ${tono}",
-    "cuerpo": "4-5 párrafos cortos con saltos de línea. Historia real o 3 puntos de valor con ejemplos concretos del nicho ${nicho}. Emojis estratégicos. Lenguaje de la audiencia: ${aud}. Mínimo 120 palabras.",
-    "cta": "instrucción directa para ${cta} — máximo 15 palabras",
-    "longitud": "150-200 palabras"
+    "hook": "",
+    "cuerpo": "",
+    "cta": ""
   },
-  "hashtags": ["#hashtag1","#hashtag2","#hashtag3","#hashtag4","#hashtag5","#hashtag6","#hashtag7","#hashtag8","#hashtag9","#hashtag10"],
+  "hashtags": [],
   "imagen": {
-    "instruccion": "Copia este prompt y pégalo en ChatGPT, DALL-E o Canva IA:",
-    "herramientas": ["ChatGPT / DALL-E","Canva IA","Adobe Firefly"],
-    "prompt": "Diseña una imagen para un post de Instagram sobre ${tema} en el nicho de ${nicho}. Estilo visual: ${visual}. La imagen debe comunicar visualmente el tema sin necesitar texto explicativo. Formato cuadrado 1:1. Alta resolución. Paleta de colores coherente con el nicho. Incluye elementos visuales específicos que conecten con ${aud}. La composición debe capturar atención en el feed en menos de 2 segundos.",
-    "notas": [
-      "tip específico sobre colores que funcionan en el nicho ${nicho}",
-      "tip sobre si incluir o no texto superpuesto y cómo",
-      "tip sobre el elemento visual principal que más convierte para esta audiencia"
-    ]
+    "instruccion": "Copia este prompt y pégalo en ChatGPT o Canva IA:",
+    "herramientas": ["ChatGPT / DALL-E", "Canva IA", "Adobe Firefly"],
+    "prompt": "",
+    "notas": ["", "", ""]
   }
 }`;
 
   } else {
-    // Reels
-    prompt = `Eres un guionista profesional de Reels virales para creadores hispanos. Escribes guiones REALES — el texto exacto que alguien va a decir frente a la cámara. No estructuras, no títulos, no indicaciones de escena. Solo las palabras que se hablan.
+    // ─── REELS ─────────────────────────────────────────────────────────────
+    prompt = `Escribe el contenido completo para un Reel de Instagram/TikTok.
 
 DATOS:
 - Nicho: ${nicho}
@@ -62,41 +76,48 @@ DATOS:
 - Tema: ${tema}
 - Tipo de hook: ${tipo}
 - Tono: ${tono}
-- CTA final: ${cta}
+- CTA: ${cta}
 
-REGLAS DEL GUIÓN (obligatorias):
-1. Escribe como se habla en voz alta, no como se escribe. Español natural, sin formalismos.
-2. Frases cortas. Máximo 10 palabras por frase.
-3. Pausas dramáticas marcadas con "..."
-4. Palabras clave en MAYÚSCULAS para indicar énfasis de voz.
-5. El hook (primeros 3-5 seg) debe causar "espera ¿qué?" — sin saludos, sin presentaciones.
-6. El desarrollo da 3 puntos de valor CONCRETOS con ejemplos del nicho ${nicho}. Sin frases motivacionales vacías.
-7. El CTA cierra con una instrucción directa para ${cta}.
-8. El guión completo escrito en un solo bloque de texto corrido — listo para copiar en un teleprompter y leer de arriba a abajo.
-9. Mínimo 150 palabras. Máximo 180 palabras. Tiempo de lectura: 60-70 segundos a ritmo natural.
+HOOKS — 3 opciones con ángulos completamente distintos:
+- Hook 1: pregunta que duele (algo que el avatar piensa pero no dice en voz alta)
+- Hook 2: afirmación polémica o contraintuitiva (algo que va contra lo que todos dicen)
+- Hook 3: situación concreta con contradicción (número real + giro inesperado)
+- Regla absoluta: cada hook funciona solo, sin contexto previo. El espectador no sabe quién eres. Sin saludos.
+- Deben ser específicos para "${nicho}" y "${tema}" — no pueden servir para otro nicho.
 
-REGLAS DE LOS HOOKS (3 opciones):
-- Cada hook funciona SOLO como primera línea de video — sin contexto previo.
-- Específicos para el nicho ${nicho} y el tema ${tema}. Nada genérico.
-- Patrones: pregunta que duele / afirmación polémica / dato concreto con contradicción.
+GUIÓN — reglas estrictas:
+- Escríbelo como se habla en voz alta, no como se escribe
+- Frases cortas. Máximo 10 palabras por frase.
+- Pausas dramáticas con "..."
+- Palabras de énfasis en MAYÚSCULAS
+- Arranca directo con el hook elegido. Cero saludos, cero presentaciones.
+- Desarrollo: 3 puntos CONCRETOS con ejemplos reales del nicho ${nicho}. Sin frases de relleno.
+- CTA: instrucción directa para "${cta}". Urgencia real. 2-3 frases.
+- guion_completo: TODO el guión seguido (hook + desarrollo + cta). Sin títulos ni secciones. Solo las palabras que se dicen. Mínimo 150 palabras, máximo 180. Listo para copiar en teleprompter.
 
-Responde ÚNICAMENTE con este JSON válido, sin texto adicional, sin markdown:
+DESCRIPCIÓN para Instagram:
+- Línea 1: el hook más fuerte de los 3
+- Líneas 2-3: amplifica el valor del video en máximo 2 frases
+- Línea 4: CTA directo para "${cta}"
+- Al final: 8 hashtags del nicho ${nicho}
+- Total: máximo 150 palabras
 
+Devuelve este JSON exacto:
 {
   "hooks": [
-    {"texto": "hook #1 — pregunta o afirmación que genera curiosidad inmediata sobre ${tema} en el nicho ${nicho}", "duracion": "3-5 seg"},
-    {"texto": "hook #2 — ángulo completamente diferente, más polémico o provocador", "duracion": "4-6 seg"},
-    {"texto": "hook #3 — basado en un dolor concreto de ${aud}", "duracion": "3-5 seg"}
+    {"texto": "", "duracion": ""},
+    {"texto": "", "duracion": ""},
+    {"texto": "", "duracion": ""}
   ],
   "guion": {
-    "hook": "Texto exacto de los primeros 5 segundos. Sin saludo. Sin presentación. Directo al choque o la curiosidad. 1-2 frases máximo.",
-    "desarrollo": "Texto exacto del cuerpo (segundos 5-50). Escrito como se habla. Frases cortas separadas por puntos o '...'. 3 puntos de valor concretos con ejemplos reales del nicho ${nicho}. MAYÚSCULAS en las palabras que necesitan énfasis de voz. Mínimo 110 palabras. Este campo es el guión completo — no un resumen.",
-    "cta": "Texto exacto del cierre (últimos 10-15 segundos). Instrucción directa para ${cta}. 2-3 frases. Con urgencia real.",
-    "guion_completo": "El guión entero en un solo bloque de texto corrido: hook + desarrollo + cta. Sin títulos. Sin secciones. Solo el texto que se dice de principio a fin. Mínimo 150 palabras. Listo para teleprompter.",
+    "hook": "",
+    "desarrollo": "",
+    "cta": "",
+    "guion_completo": "",
     "duracion": "60-70 segundos",
-    "palabras": "150-180 palabras"
+    "palabras": ""
   },
-  "descripcion": "Descripción del Reel para Instagram. Primera línea: el hook más fuerte (copia el mejor de los 3). Segunda y tercera línea: amplifica el valor del video en 1-2 frases. Cuarta línea: CTA para ${cta}. Al final: 8 hashtags del nicho ${nicho}. Total: máximo 150 palabras."
+  "descripcion": ""
 }`;
   }
 
@@ -114,9 +135,12 @@ Responde ÚNICAMENTE con este JSON válido, sin texto adicional, sin markdown:
       },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
-        messages: [{ role: "user", content: prompt }],
+        messages: [
+          { role: "system", content: sistema },
+          { role: "user",   content: prompt  }
+        ],
         max_tokens: 2000,
-        temperature: 0.85,
+        temperature: 0.9,
       }),
     });
     clearTimeout(timeout);
