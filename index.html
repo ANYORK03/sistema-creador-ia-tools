@@ -273,9 +273,15 @@
       ⚡ Generar contenido
     </button>
 
+    <!-- Mensaje inicial — visible antes de la primera generación -->
+    <div id="uso-inicial" style="margin-top:12px;text-align:center;font-size:.78rem;color:var(--gray-s);font-weight:500;">
+      🎁 Tienes <strong style="color:var(--white);">15 generaciones gratis</strong> para probar el sistema
+    </div>
+
+    <!-- Contador — aparece después de la primera generación -->
     <div id="uso-badge" style="display:none;margin-top:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:10px 16px;">
-        <span style="font-size:.78rem;color:var(--gray);font-weight:600;">Generaciones hoy</span>
+        <span style="font-size:.78rem;color:var(--gray);font-weight:600;">Generaciones disponibles</span>
         <div style="display:flex;align-items:center;gap:8px;">
           <div id="uso-bar-wrap" style="width:80px;height:6px;background:var(--border);border-radius:10px;overflow:hidden;">
             <div id="uso-bar" style="height:100%;background:var(--blue);border-radius:10px;transition:width .4s;width:0%"></div>
@@ -283,7 +289,30 @@
           <span id="uso-texto" style="font-size:.78rem;font-weight:800;color:var(--blue);white-space:nowrap;"></span>
         </div>
       </div>
+      <!-- Aviso cuando quedan 3 -->
+      <div id="uso-aviso" style="display:none;margin-top:8px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:10px 14px;font-size:.78rem;color:#C2410C;line-height:1.5;">
+        ⚠️ Te quedan pocas generaciones. Si esta herramienta te está ayudando, <strong>únete a la lista de espera</strong> para recibir acceso temprano al sistema completo.
+        <a href="https://www.skool.com/sistema-creador-ia-2270/about" target="_blank" style="display:inline-block;margin-top:6px;color:#EA580C;font-weight:700;text-decoration:none;">Unirme a la lista de espera →</a>
+      </div>
     </div>
+  </div>
+
+  <!-- PANTALLA LÍMITE ALCANZADO -->
+  <div class="card" id="limite-card" style="display:none;text-align:center;padding:40px 32px;">
+    <div style="font-size:2.5rem;margin-bottom:16px;">🎯</div>
+    <h2 style="font-size:1.4rem;font-weight:900;margin-bottom:12px;color:var(--white);">Ya usaste tus 15 generaciones gratis.</h2>
+    <p style="font-size:.9rem;color:var(--gray);line-height:1.7;max-width:420px;margin:0 auto 28px;">
+      Si esta herramienta te ayudó a convertir ideas en contenido, únete a la lista de espera del Sistema Creador IA para recibir acceso temprano, recursos nuevos y futuras mejoras.
+    </p>
+    <a href="https://www.skool.com/sistema-creador-ia-2270/about" target="_blank"
+       style="display:inline-flex;align-items:center;gap:8px;background:#1D4ED8;color:#fff;font-size:.9rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase;padding:16px 28px;border-radius:12px;text-decoration:none;box-shadow:0 4px 14px rgba(29,78,216,.35);margin-bottom:12px;">
+      ⚡ Unirme a la lista de espera
+    </a>
+    <br/>
+    <button onclick="document.getElementById('limite-card').style.display='none';document.getElementById('results').classList.add('show');"
+      style="background:none;border:1px solid var(--border);color:var(--gray);font-size:.82rem;font-weight:600;padding:10px 20px;border-radius:10px;cursor:pointer;margin-top:8px;">
+      Ver mi último contenido generado
+    </button>
   </div>
 
   <!-- LOADING -->
@@ -370,7 +399,7 @@
         return;
       }
       if (res.status === 429) {
-        mostrarError(data.error || 'Límite alcanzado. Intenta más tarde.');
+        mostrarLimite();
         return;
       }
       if (res.status === 503) {
@@ -388,20 +417,9 @@
 
       renderResultados(data);
 
-      // Mostrar contador de generaciones
+      // Actualizar contador de generaciones
       if (data._uso) {
-        const { usadas, limite, quedan } = data._uso;
-        const badge = document.getElementById('uso-badge');
-        const bar   = document.getElementById('uso-bar');
-        const texto = document.getElementById('uso-texto');
-        if (badge && bar && texto) {
-          badge.style.display = 'block';
-          const pct = Math.round((usadas / limite) * 100);
-          bar.style.width = pct + '%';
-          bar.style.background = quedan <= 3 ? '#EF4444' : quedan <= 7 ? '#F97316' : 'var(--blue)';
-          texto.style.color    = quedan <= 3 ? '#EF4444' : quedan <= 7 ? '#F97316' : 'var(--blue)';
-          texto.textContent    = quedan > 0 ? `${quedan} de ${limite} restantes` : '0 restantes — vuelve mañana';
-        }
+        actualizarContador(data._uso);
       }
 
       total++;
@@ -427,6 +445,41 @@
       el.textContent = msg;
     }
     setTimeout(() => { el.style.display = 'none'; }, 8000);
+  }
+
+  function actualizarContador(uso) {
+    const { usadas, limite, quedan } = uso;
+    const badge  = document.getElementById('uso-badge');
+    const bar    = document.getElementById('uso-bar');
+    const texto  = document.getElementById('uso-texto');
+    const aviso  = document.getElementById('uso-aviso');
+    const inicial = document.getElementById('uso-inicial');
+
+    if (!badge) return;
+
+    // Ocultar mensaje inicial, mostrar contador
+    if (inicial) inicial.style.display = 'none';
+    badge.style.display = 'block';
+
+    const pct   = Math.round((usadas / limite) * 100);
+    const color = quedan <= 3 ? '#EF4444' : quedan <= 7 ? '#F97316' : 'var(--blue)';
+
+    bar.style.width      = pct + '%';
+    bar.style.background = color;
+    texto.style.color    = color;
+    texto.textContent    = `${quedan} de ${limite} restantes`;
+
+    // Aviso cuando quedan 3 o menos
+    if (aviso) aviso.style.display = quedan <= 3 && quedan > 0 ? 'block' : 'none';
+
+    // Si llegó a 0, mostrar pantalla de límite
+    if (quedan <= 0) mostrarLimite();
+  }
+
+  function mostrarLimite() {
+    document.getElementById('limite-card').style.display = 'block';
+    document.getElementById('results').classList.remove('show');
+    document.getElementById('limite-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   // Almacén de textos a copiar — evita pasar texto por atributos HTML (rompe con comillas/saltos)
