@@ -3,244 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sistema Creador IA — Genera tu contenido de la semana en minutos</title>
-  <meta name="description" content="La herramienta que genera hooks, guiones y captions para que publiques todos los días sin quedarte en blanco. Gratis." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231D4ED8'/><polygon points='50,14 88,82 12,82' fill='%23FFFFFF'/></svg>" />
+  <title>Mini Sistema Creador IA — Acceso Gratis</title>
+  <meta name="description" content="Convierte tus ideas en contenido con IA. Hook, guión, caption y hashtags listos. 15 generaciones gratis." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%232563EB'/><polygon points='50,14 88,82 12,82' fill='%23FFFFFF'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #FFFFFF; --card: #F8FAFC; --border: #E2E8F0;
-      --blue: #1D4ED8; --blue-dk: #1E40AF; --blue-gl: rgba(29,78,216,.10);
-      --text: #0F172A; --gray: #64748B; --muted: #94A3B8;
+      --bg: #0B1225; --card: #111827; --card2: #1a2234;
+      --border: #1e2d45; --border2: #253352;
+      --blue: #2563EB; --blue-l: #3B82F6; --blue-glow: rgba(37,99,235,.12);
+      --orange: #F97316; --orange-glow: rgba(249,115,22,.15);
+      --white: #FFFFFF; --gray: #94A3B8; --gray-s: #64748B;
+      --green: #22C55E;
     }
-    html, body { min-height:100vh; font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; overflow-x:hidden; max-width:100vw; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--white); min-height: 100vh; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 
-    .wrap { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px 24px 64px; }
+    /* HEADER */
+    .header { display: flex; align-items: center; gap: 10px; padding: 18px 24px; border-bottom: 1px solid var(--border); }
+    .logo-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-icon svg { width: 14px; height: 14px; }
+    .logo-text { font-size: .8rem; font-weight: 700; color: var(--gray); }
+    .logo-text span { color: var(--white); }
 
-    /* LOGO */
-    .logo { display:flex; flex-direction:column; align-items:center; gap:2px; margin-bottom:36px; }
-    .logo-top { font-size:.6rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
-    .logo-main { font-size:.95rem; font-weight:900; color:var(--text); }
-    .logo-main span { color:var(--blue); }
-
-    /* CARD */
-    .card { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:48px 44px; width:100%; max-width:540px; display:flex; flex-direction:column; align-items:center; box-shadow:0 4px 24px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04); }
-    @media(max-width:560px){ .card { padding:36px 24px; } }
-
-    /* TOOL PREVIEW */
-    .tool-preview {
-      background: #EFF6FF;
-      border: 1px solid #BFDBFE;
-      border-radius: 16px;
-      padding: 16px 20px;
-      width: 100%;
-      margin-bottom: 28px;
-      position: relative;
-      overflow: hidden;
-    }
-    .tool-preview::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--blue), #F97316);
-      border-radius: 16px 16px 0 0;
-    }
-    .tool-name { font-size:.7rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
-    .tool-title { font-size:1.1rem; font-weight:900; margin-bottom:4px; color:var(--text); }
-    .tool-title span { color:var(--blue); }
-    .tool-desc { font-size:.8rem; color:var(--gray); margin-bottom:14px; }
-    .tool-features { display:flex; gap:8px; flex-wrap:wrap; }
-    .feat { font-size:.7rem; font-weight:700; padding:4px 10px; border-radius:6px; border:1px solid var(--border); color:var(--muted); background:#fff; }
-    .feat.active { color:#C2410C; border-color:#FDBA74; background:#FFF7ED; }
-    .lock-overlay { display:flex; align-items:center; gap:6px; margin-top:14px; font-size:.75rem; color:var(--gray); }
-    .lock-overlay span { color:var(--blue); font-weight:700; }
+    /* LAYOUT */
+    .wrap { max-width: 520px; margin: 0 auto; padding: 52px 24px 100px; }
 
     /* BADGE */
-    .badge { display:inline-flex; align-items:center; gap:8px; background:var(--blue-gl); border:1px solid #BFDBFE; color:var(--blue); font-size:.68rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:7px 16px; border-radius:100px; margin-bottom:24px; }
-    .badge-dot { width:6px; height:6px; background:var(--blue); border-radius:50%; animation:pulse 2s ease-in-out infinite; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-glow); border: 1px solid rgba(37,99,235,.25); color: var(--blue-l); font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; margin-bottom: 24px; }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--blue-l); animation: pulse 2s ease-in-out infinite; }
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }
 
-    h1 { font-size:clamp(1.6rem,4.5vw,2.2rem); font-weight:900; letter-spacing:-.04em; line-height:1.1; text-align:center; margin-bottom:12px; color:var(--text); }
-    h1 span { color:var(--blue); }
-    .subhead { font-size:.9rem; color:var(--gray); text-align:center; line-height:1.65; max-width:400px; margin-bottom:28px; }
-    .subhead strong { color:var(--text); }
-
-    .div { width:100%; height:1px; background:var(--border); margin-bottom:24px; }
-
-    /* BULLETS */
-    .bullets { width:100%; display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
-    .bullet { display:flex; align-items:flex-start; gap:10px; }
-    .bullet-check { width:22px; height:22px; border-radius:7px; background:#DBEAFE; border:1px solid #93C5FD; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-    .bullet-check svg { width:11px; height:11px; stroke:var(--blue); stroke-width:2.5; }
-    .bullet-text { font-size:.85rem; color:var(--gray); line-height:1.5; }
-    .bullet-text strong { color:var(--text); }
+    /* HERO */
+    h1 { font-size: clamp(1.65rem, 4.5vw, 2.2rem); font-weight: 900; line-height: 1.1; letter-spacing: -.025em; margin-bottom: 18px; }
+    h1 span { color: var(--blue-l); }
+    .subhead { font-size: .95rem; color: var(--gray); line-height: 1.75; margin-bottom: 36px; }
 
     /* FORM */
-    .form { width:100%; display:flex; flex-direction:column; gap:10px; }
-    .input-wrap { position:relative; width:100%; }
-    .input-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--muted); display:flex; align-items:center; }
-    .input-icon svg { width:16px; height:16px; }
-    input[type="text"], input[type="email"] { width:100%; background:#fff; border:1px solid var(--border); border-radius:12px; padding:15px 15px 15px 44px; font-family:'Inter',sans-serif; font-size:.9rem; font-weight:500; color:var(--text); outline:none; transition:all .2s; }
-    input::placeholder { color:var(--muted); }
-    input:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-gl); }
+    .form { display: flex; flex-direction: column; gap: 10px; }
+    input[type="text"], input[type="email"] {
+      width: 100%; background: var(--card); border: 1px solid var(--border2);
+      border-radius: 12px; padding: 15px 16px;
+      font-family: 'Inter', sans-serif; font-size: .92rem; font-weight: 500;
+      color: var(--white); outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    input::placeholder { color: var(--gray-s); }
+    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-glow); }
 
-    .btn-submit { width:100%; background:#F97316; color:#fff; font-family:'Inter',sans-serif; font-size:.95rem; font-weight:900; letter-spacing:.06em; text-transform:uppercase; padding:17px; border-radius:12px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 14px rgba(249,115,22,.35); transition:all .2s; margin-top:4px; }
-    .btn-submit:hover { background:#EA6C0A; transform:translateY(-2px); box-shadow:0 6px 20px rgba(249,115,22,.45); }
-    .btn-submit:disabled { opacity:.5; cursor:not-allowed; transform:none; }
-    .btn-submit svg { width:18px; height:18px; flex-shrink:0; }
+    .btn-submit {
+      width: 100%; background: var(--orange); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: .92rem; font-weight: 800;
+      letter-spacing: .04em; text-transform: uppercase;
+      padding: 17px; border-radius: 12px; border: none; cursor: pointer;
+      transition: all .2s; box-shadow: 0 4px 20px var(--orange-glow);
+      margin-top: 4px;
+    }
+    .btn-submit:hover { background: #EA6C0A; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(249,115,22,.35); }
+    .btn-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-    .privacy { margin-top:14px; font-size:.7rem; color:var(--muted); text-align:center; display:flex; align-items:center; justify-content:center; gap:6px; }
-    .privacy svg { width:12px; height:12px; }
+    .microcopy { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: .72rem; color: var(--gray-s); margin-top: 12px; margin-bottom: 52px; }
 
-    /* SOCIAL PROOF */
-    .social-proof { margin-top:28px; display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px 18px; width:100%; }
-    .avatars { display:flex; margin-right:4px; }
-    .av { width:28px; height:28px; border-radius:50%; border:2px solid var(--bg); display:flex; align-items:center; justify-content:center; font-size:.62rem; font-weight:900; color:#fff; margin-left:-8px; flex-shrink:0; }
-    .av:first-child { margin-left:0; }
-    .av-1{background:#1D4ED8} .av-2{background:#0891B2} .av-3{background:#7C3AED} .av-4{background:#EA580C}
-    .proof-text { font-size:.76rem; color:var(--gray); line-height:1.4; }
-    .proof-text strong { color:var(--text); }
+    /* DIVIDER */
+    .divider { height: 1px; background: var(--border); margin: 0 0 44px; }
 
-    /* SUCCESS STATE */
-    .success { display:none; text-align:center; }
-    .success.show { display:flex; flex-direction:column; align-items:center; }
-    .success-icon { font-size:3rem; margin-bottom:16px; }
-    .success h2 { font-size:1.4rem; font-weight:900; margin-bottom:10px; color:var(--text); }
-    .success h2 span { color:var(--blue); }
-    .success p { font-size:.88rem; color:var(--gray); margin-bottom:24px; line-height:1.65; max-width:380px; }
-    .btn-skool { display:inline-flex; align-items:center; gap:8px; background:#F97316; color:#fff; font-size:.9rem; font-weight:900; letter-spacing:.05em; text-transform:uppercase; padding:16px 28px; border-radius:12px; text-decoration:none; transition:all .2s; box-shadow:0 4px 14px rgba(249,115,22,.35); }
-    .btn-skool:hover { background:#EA6C0A; transform:translateY(-2px); }
-    .btn-tool { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--gray); font-size:.85rem; font-weight:700; padding:13px 24px; border-radius:12px; text-decoration:none; border:1px solid var(--border); transition:all .2s; margin-top:10px; }
-    .btn-tool:hover { border-color:var(--blue); color:var(--blue); }
-    .steps-success { display:flex; flex-direction:column; gap:10px; width:100%; margin:20px 0; }
-    .step-s { display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-size:.83rem; color:var(--gray); }
-    .step-s-num { width:24px; height:24px; border-radius:50%; background:var(--blue-gl); border:1px solid #93C5FD; color:var(--blue); font-size:.7rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .step-s.done .step-s-num { background:#DCFCE7; border-color:#86EFAC; color:#16A34A; }
-    .step-s strong { color:var(--text); }
+    /* SECTION */
+    .section-tag { font-size: .67rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--blue-l); margin-bottom: 14px; }
+    h2 { font-size: 1.05rem; font-weight: 800; line-height: 1.35; margin-bottom: 20px; }
+
+    /* BULLETS */
+    .bullets { display: flex; flex-direction: column; gap: 8px; margin-bottom: 44px; }
+    .bullet { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; font-size: .86rem; color: var(--gray); font-weight: 500; }
+    .bullet-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--blue-glow); border: 1px solid rgba(37,99,235,.2); display: flex; align-items: center; justify-content: center; font-size: .85rem; flex-shrink: 0; }
+    .bullet strong { color: var(--white); font-weight: 700; }
+
+    /* BELIEF */
+    .belief { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--blue); border-radius: 12px; padding: 24px; }
+    .belief h2 { font-size: .98rem; margin-bottom: 10px; }
+    .belief p { font-size: .87rem; color: var(--gray); line-height: 1.75; }
+
+    /* SUCCESS */
+    .success { display: none; flex-direction: column; align-items: center; text-align: center; padding: 72px 24px; }
+    .success.show { display: flex; }
+    .success-icon { width: 64px; height: 64px; border-radius: 18px; background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.25); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 24px; }
+    .success h2 { font-size: 1.35rem; font-weight: 900; letter-spacing: -.02em; margin-bottom: 12px; }
+    .success h2 span { color: var(--blue-l); }
+    .success p { font-size: .9rem; color: var(--gray); line-height: 1.7; max-width: 380px; margin-bottom: 28px; }
+    .btn-tool { display: inline-flex; align-items: center; gap: 8px; background: var(--blue); color: #fff; font-size: .88rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 16px 28px; border-radius: 12px; text-decoration: none; transition: all .2s; box-shadow: 0 4px 20px rgba(37,99,235,.3); }
+    .btn-tool:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+    @media(max-width:480px) { .wrap { padding: 36px 20px 80px; } h1 { font-size: 1.55rem; } }
   </style>
 </head>
 <body>
-<div class="wrap">
 
-  <div class="logo">
-    <svg width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="border-radius:12px;margin-bottom:8px;">
-      <rect width="100" height="100" rx="18" fill="#1D4ED8"/>
+<header class="header">
+  <div class="logo-icon">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <polygon points="50,14 88,82 12,82" fill="#FFFFFF"/>
     </svg>
-    <div class="logo-top">Tu Primer Empleado IA</div>
-    <div class="logo-main">Sistema <span>Creador</span> IA</div>
+  </div>
+  <span class="logo-text"><span>Mini Sistema Creador IA</span> · Tu Primer Empleado IA</span>
+</header>
+
+<div class="wrap">
+
+  <!-- FORM SECTION -->
+  <div id="form-section">
+    <div class="badge"><div class="badge-dot"></div>Acceso gratuito · 15 generaciones</div>
+
+    <h1>Crea tu primer contenido con IA <span>sin empezar desde cero</span></h1>
+    <p class="subhead">Regístrate gratis y accede al Mini Sistema Creador IA. Tendrás 15 generaciones para convertir tus ideas en hook, guión, caption, hashtags y prompt de imagen.</p>
+
+    <form class="form" id="capturaForm" onsubmit="enviarForm(event)">
+      <input type="text" id="nombre" placeholder="Tu nombre" required />
+      <input type="email" id="email" placeholder="Tu correo electrónico" required />
+      <button type="submit" class="btn-submit" id="btnSubmit">
+        Acceder gratis a la herramienta →
+      </button>
+    </form>
+    <p class="microcopy">🔒 Sin tarjeta. Sin spam. Acceso gratuito inmediato.</p>
+
+    <div class="divider"></div>
+
+    <!-- QUÉ VAS A PODER CREAR -->
+    <div class="section-tag">¿Qué vas a poder crear?</div>
+    <div class="bullets">
+      <div class="bullet"><div class="bullet-icon">🎣</div><div><strong>Hooks</strong> para captar atención en los primeros segundos</div></div>
+      <div class="bullet"><div class="bullet-icon">📜</div><div><strong>Guión</strong> completo listo para grabar un reel</div></div>
+      <div class="bullet"><div class="bullet-icon">✍️</div><div><strong>Caption</strong> listo para adaptar y publicar</div></div>
+      <div class="bullet"><div class="bullet-icon">#</div><div><strong>Hashtags</strong> sugeridos para tu nicho</div></div>
+      <div class="bullet"><div class="bullet-icon">🖼</div><div><strong>Prompt de imagen</strong> para crear el visual del post</div></div>
+      <div class="bullet"><div class="bullet-icon">🎯</div><div><strong>CTA</strong> para generar conversación o acción</div></div>
+    </div>
+
+    <!-- CREENCIA -->
+    <div class="belief">
+      <h2>No era falta de ideas. Era falta de sistema.</h2>
+      <p>La herramienta toma tu idea, la ordena y la convierte en contenido listo para adaptar. No necesitas aprender IA desde cero ni empezar cada publicación desde una hoja en blanco.</p>
+    </div>
   </div>
 
-  <!-- CARD PRINCIPAL -->
-  <div class="card">
-
-    <!-- PREVIEW DE LA HERRAMIENTA -->
-    <div class="tool-preview">
-      <div class="tool-name">⚡ Para creadores hispanos</div>
-      <div class="tool-title">Sistema <span>Creador</span> IA</div>
-      <div class="tool-desc">Escribe tu nicho y tu tema — la IA genera el contenido listo para publicar</div>
-      <div class="tool-features">
-        <span class="feat active">🎣 3 Hooks</span>
-        <span class="feat active">📜 Guión completo</span>
-        <span class="feat active">✍️ Caption + hashtags</span>
-        <span class="feat active">🖼 Prompt imagen</span>
-      </div>
-      <div class="lock-overlay">
-        🔒 Acceso gratuito → <span>Regístrate abajo</span>
-      </div>
-    </div>
-
-    <!-- FORM SECTION -->
-    <div id="form-section" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-      <div class="badge"><div class="badge-dot"></div>Gratis · Para creadores hispanos · En español</div>
-      <h1>Deja de quedarte en blanco.<br><span>Publica hoy.</span></h1>
-      <p class="subhead">Entra tu nicho y tu tema — la IA te genera el hook, el guión y el caption <strong>listos para copiar y publicar.</strong> Sin improvisar. Sin bloqueo creativo.</p>
-
-      <div class="div"></div>
-
-      <div class="bullets">
-        <div class="bullet">
-          <div class="bullet-check"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div>
-          <div class="bullet-text"><strong>3 hooks para elegir</strong> — el que más suene como tú, ese publicas</div>
-        </div>
-        <div class="bullet">
-          <div class="bullet-check"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div>
-          <div class="bullet-text"><strong>Guión completo listo para grabar</strong> — hook, desarrollo y CTA en 60 segundos</div>
-        </div>
-        <div class="bullet">
-          <div class="bullet-check"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div>
-          <div class="bullet-text"><strong>Caption + hashtags para el post</strong> — primera línea que para el scroll incluida</div>
-        </div>
-        <div class="bullet">
-          <div class="bullet-check"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div>
-          <div class="bullet-text"><strong>100% gratis</strong> — sin tarjeta, sin trampa, sin límite de usos</div>
-        </div>
-      </div>
-
-      <form class="form" id="capturaForm" onsubmit="enviarForm(event)">
-        <div class="input-wrap">
-          <div class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-          <input type="text" id="nombre" placeholder="Tu nombre" required />
-        </div>
-        <div class="input-wrap">
-          <div class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-          <input type="email" id="email" placeholder="Tu correo electrónico" required />
-        </div>
-        <button type="submit" class="btn-submit" id="btnSubmit">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          QUIERO CREAR MI CONTENIDO
-        </button>
-      </form>
-
-      <div class="privacy">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Sin spam. Tu correo está seguro.
-      </div>
-
-      <div class="social-proof">
-        <div class="avatars">
-          <div class="av av-1">YM</div>
-          <div class="av av-2">AL</div>
-          <div class="av av-3">CR</div>
-          <div class="av av-4">JP</div>
-        </div>
-        <div class="proof-text"><strong>Creadores hispanos</strong> que publican con este sistema sin quedarse en blanco</div>
-      </div>
-    </div>
-
-    <!-- SUCCESS STATE -->
-    <div class="success" id="success">
-      <div class="success-icon">⚡</div>
-      <h2>¡Listo! Ya tienes <span>acceso.</span></h2>
-      <p>Entra a la herramienta, escribe tu nicho y tu tema — y en segundos tienes tu contenido listo para publicar hoy.</p>
-
-      <div class="steps-success">
-        <div class="step-s done">
-          <div class="step-s-num">✓</div>
-          <div><strong>Registrado</strong> — revisa tu correo</div>
-        </div>
-        <div class="step-s">
-          <div class="step-s-num">2</div>
-          <div><strong>Entra a la herramienta</strong> — escribe tu nicho y tema</div>
-        </div>
-        <div class="step-s">
-          <div class="step-s-num">3</div>
-          <div><strong>Copia y publica</strong> — hook, guión y caption listos</div>
-        </div>
-      </div>
-
-      <a href="/herramienta" class="btn-skool">
-        ⚡ Ir a la herramienta ahora
-      </a>
-      <a href="https://www.skool.com/sistema-creador-ia-2270/about" class="btn-tool" target="_blank">
-        Entrar a la comunidad gratis →
-      </a>
-    </div>
-
+  <!-- SUCCESS STATE -->
+  <div class="success" id="success">
+    <div class="success-icon">✓</div>
+    <h2>Listo. Ya tienes acceso al<br><span>Mini Sistema Creador IA.</span></h2>
+    <p>Entra a la herramienta, escribe tu nicho y tu tema — y en segundos tienes contenido listo para publicar hoy.</p>
+    <a href="/" class="btn-tool">Entrar a la herramienta →</a>
   </div>
+
 </div>
 
 <script>
@@ -251,38 +163,27 @@
     const btn    = document.getElementById('btnSubmit');
 
     btn.disabled = true;
-    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin .8s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Activando acceso...';
+    btn.textContent = 'Activando acceso...';
 
     try {
-      // 1. Guardar lead
       await fetch('/api/captura', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre, email })
       });
-    } catch(err) {
-      console.error('captura:', err);
-    }
+    } catch(err) { console.error('captura:', err); }
 
     try {
-      // 2. Crear sesión (cookie firmada)
-      const authRes = await fetch('/api/auth', {
+      await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
-      if (!authRes.ok) throw new Error('auth failed');
-    } catch(err) {
-      console.error('auth:', err);
-      // Si falla auth, igual mostramos el success — el usuario puede intentar de nuevo
-    }
+    } catch(err) { console.error('auth:', err); }
 
     document.getElementById('form-section').style.display = 'none';
     document.getElementById('success').classList.add('show');
   }
 </script>
-<style>
-  @keyframes spin { to { transform: rotate(360deg); } }
-</style>
 </body>
 </html>

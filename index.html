@@ -3,204 +3,247 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sistema Creador IA — Hook + Guión + Imagen en segundos</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231D4ED8'/><polygon points='50,14 88,82 12,82' fill='%23FFFFFF'/></svg>" />
+  <title>Mini Sistema Creador IA — Convierte una idea en contenido</title>
+  <meta name="description" content="Escribe tu nicho y tu tema. La IA genera hook, guión, caption, hashtags y prompt de imagen listos para publicar." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%232563EB'/><polygon points='50,14 88,82 12,82' fill='%23FFFFFF'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black: #FFFFFF; --card: #F8FAFC; --border: #E2E8F0;
-      --blue: #1D4ED8; --blue-l: #3B82F6; --blue-glow: rgba(29,78,216,.10);
-      --neon: #1D4ED8; --neon-glow: rgba(29,78,216,.10);
-      --white: #0F172A; --gray: #64748B; --gray-s: #94A3B8;
+      --bg: #0B1225; --card: #111827; --card2: #1a2234;
+      --border: #1e2d45; --border2: #253352;
+      --blue: #2563EB; --blue-l: #3B82F6; --blue-glow: rgba(37,99,235,.12);
+      --orange: #F97316; --orange-glow: rgba(249,115,22,.15);
+      --white: #FFFFFF; --gray: #94A3B8; --gray-s: #64748B;
+      --green: #22C55E;
     }
     html { scroll-behavior: smooth; overflow-x: hidden; }
-    body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--white); min-height: 100vh; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #F1F5F9; } ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 4px; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--white); min-height: 100vh; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: var(--card); } ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 4px; }
 
     /* NAV */
-    nav { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid var(--border); background:rgba(255,255,255,.96); backdrop-filter:blur(12px); position:sticky; top:0; z-index:100; }
-    .nav-left { display:flex; align-items:center; gap:10px; min-width:0; }
-    .nav-brand-wrap { display:flex; flex-direction:column; gap:1px; min-width:0; }
-    .nav-brand-top { font-size:.52rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gray-s); white-space:nowrap; }
-    .nav-brand-main { font-size:.9rem; font-weight:900; letter-spacing:-.01em; line-height:1; white-space:nowrap; }
-    .nav-brand-main span { color:var(--blue); }
-    .nav-badge { font-size:.65rem; font-weight:700; background:var(--blue-glow); color:var(--blue-l); border:1px solid var(--blue); padding:3px 8px; border-radius:20px; letter-spacing:.04em; flex-shrink:0; }
-    .nav-right { font-size:.75rem; color:var(--gray-s); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px; }
-    .nav-right a { color:var(--blue); text-decoration:none; font-weight:600; }
-    @media(max-width:480px){ .nav-right { display:none; } .nav-badge { display:none; } }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border); background:rgba(11,18,37,.95); backdrop-filter:blur(12px); position:sticky; top:0; z-index:100; }
+    .nav-left { display:flex; align-items:center; gap:10px; }
+    .nav-logo { width:30px; height:30px; border-radius:8px; background:var(--blue); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .nav-logo svg { width:13px; height:13px; }
+    .nav-name { font-size:.82rem; font-weight:800; color:var(--white); }
+    .nav-badge { font-size:.62rem; font-weight:700; background:var(--blue-glow); color:var(--blue-l); border:1px solid rgba(37,99,235,.25); padding:3px 10px; border-radius:20px; letter-spacing:.04em; }
+    @media(max-width:480px){ .nav-badge { display:none; } }
 
     /* HERO */
-    .hero { text-align:center; padding:60px 24px 40px; max-width:680px; margin:0 auto; }
-    .hero-tag { display:inline-flex; align-items:center; gap:6px; font-size:.75rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--blue); border:1px solid rgba(29,78,216,.25); padding:5px 14px; border-radius:20px; background:rgba(29,78,216,.06); margin-bottom:20px; }
-    .hero h1 { font-size:clamp(1.9rem,4.5vw,3rem); font-weight:900; line-height:1.1; margin-bottom:14px; }
-    .hero h1 em { color:var(--blue); font-style:normal; }
-    .hero p { font-size:.98rem; color:var(--gray); }
+    .hero { text-align:center; padding:52px 24px 32px; max-width:660px; margin:0 auto; }
+    .hero-tag { display:inline-flex; align-items:center; gap:6px; font-size:.7rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--blue-l); border:1px solid rgba(37,99,235,.25); padding:5px 14px; border-radius:20px; background:var(--blue-glow); margin-bottom:20px; }
+    .hero h1 { font-size:clamp(1.75rem,4.5vw,2.6rem); font-weight:900; line-height:1.1; letter-spacing:-.025em; margin-bottom:14px; }
+    .hero h1 em { color:var(--blue-l); font-style:normal; }
+    .hero p { font-size:.95rem; color:var(--gray); line-height:1.7; margin-bottom:10px; }
+    .hero-micro { font-size:.78rem; color:var(--gray-s); }
 
-    /* STEPS */
-    .steps { display:flex; justify-content:center; gap:8px; padding:0 24px 32px; flex-wrap:wrap; }
-    .step { display:flex; align-items:center; gap:6px; font-size:.78rem; color:var(--gray-s); }
-    .step-num { width:22px; height:22px; border-radius:50%; background:var(--blue-glow); border:1px solid var(--blue); color:var(--blue-l); font-size:.7rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .step-arrow { color:var(--border); font-size:.9rem; }
+    /* METHOD */
+    .method { display:flex; justify-content:center; align-items:center; gap:0; padding:0 24px 40px; flex-wrap:wrap; }
+    .method-step { display:flex; align-items:center; gap:8px; padding:8px 16px; background:var(--card); border:1px solid var(--border); border-radius:8px; }
+    .method-step-num { width:22px; height:22px; border-radius:50%; background:var(--blue-glow); border:1px solid rgba(37,99,235,.3); color:var(--blue-l); font-size:.68rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .method-step-label { font-size:.78rem; color:var(--gray); font-weight:600; white-space:nowrap; }
+    .method-arrow { color:var(--border2); font-size:1rem; padding:0 4px; }
+    @media(max-width:600px){ .method { gap:6px; } .method-arrow { display:none; } .method-step { flex:1; min-width:120px; justify-content:center; } }
 
-    /* CARD */
-    .wrap { max-width:760px; margin:0 auto; padding:0 20px 80px; width:100%; box-sizing:border-box; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:20px; overflow:hidden; max-width:100%; box-sizing:border-box; }
+    /* WRAP + CARD */
+    .wrap { max-width:760px; margin:0 auto; padding:0 20px 100px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:16px; }
     @media(max-width:600px){ .card { padding:20px 16px; } }
 
     /* PLATFORMS */
     .platforms { display:flex; gap:8px; flex-wrap:wrap; }
-    .plat-btn { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--gray); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .2s; }
-    .plat-btn:hover { border-color:var(--blue); color:var(--white); }
+    .plat-btn { padding:8px 18px; border-radius:8px; border:1px solid var(--border2); background:var(--card2); color:var(--gray); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .plat-btn:hover { border-color:var(--blue-l); color:var(--white); }
     .plat-btn.active { background:var(--blue-glow); border-color:var(--blue); color:var(--blue-l); }
 
     /* FORM */
     .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     @media(max-width:580px){ .grid2 { grid-template-columns:1fr; } }
-    .field { display:flex; flex-direction:column; gap:6px; margin-bottom:0; }
+    .field { display:flex; flex-direction:column; gap:6px; }
     .field.full { grid-column:1/-1; }
-    label { font-size:.75rem; font-weight:700; color:var(--gray); text-transform:uppercase; letter-spacing:.05em; }
-    input, select, textarea { background:#fff; border:1px solid var(--border); border-radius:10px; color:var(--white); font-family:inherit; font-size:.93rem; padding:11px 14px; outline:none; transition:border-color .2s; }
+    label { font-size:.7rem; font-weight:700; color:var(--gray-s); text-transform:uppercase; letter-spacing:.06em; }
+    input, select, textarea { background:var(--card2); border:1px solid var(--border2); border-radius:10px; color:var(--white); font-family:inherit; font-size:.92rem; padding:11px 14px; outline:none; transition:border-color .2s, box-shadow .2s; }
     input:focus, select:focus, textarea:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-glow); }
-    textarea { resize:vertical; min-height:80px; }
-    select option { background:#fff; }
+    input::placeholder, textarea::placeholder { color:var(--gray-s); }
+    textarea { resize:vertical; min-height:82px; }
+    select option { background:var(--card2); color:var(--white); }
 
-    /* SECTION LABEL */
-    .sec-label { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--gray-s); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    /* SEC LABEL */
+    .sec-label { font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.09em; color:var(--gray-s); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
     .sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
 
-    /* BTN */
-    .btn-gen { width:100%; padding:15px; background:#F97316; color:#fff; font-size:.98rem; font-weight:800; border:none; border-radius:12px; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:20px; box-shadow:0 4px 14px rgba(249,115,22,.35); }
-    .btn-gen:hover { background:#EA6C0A; transform:translateY(-2px); box-shadow:0 6px 20px rgba(249,115,22,.45); }
+    /* BTN GEN */
+    .btn-gen { width:100%; padding:16px; background:var(--orange); color:#fff; font-size:.95rem; font-weight:800; border:none; border-radius:12px; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:20px; box-shadow:0 4px 20px var(--orange-glow); letter-spacing:.03em; }
+    .btn-gen:hover { background:#EA6C0A; transform:translateY(-1px); box-shadow:0 6px 24px rgba(249,115,22,.4); }
     .btn-gen:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
 
-    /* LOADING */
-    .loading { display:none; text-align:center; padding:48px; }
-    .loading.show { display:block; }
-    .spinner { width:38px; height:38px; border:3px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 16px; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .loading p { color:var(--gray); font-size:.92rem; }
-    .loading small { color:var(--gray-s); font-size:.78rem; }
+    /* ERROR */
+    #error-msg { display:none; background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.25); color:#FCA5A5; border-radius:10px; padding:12px 16px; font-size:.85rem; font-weight:600; margin-bottom:10px; line-height:1.5; }
+    #error-msg a { color:#60A5FA; }
 
-    /* RESULTADO TABS */
+    /* CONTADOR */
+    #uso-inicial { margin-top:12px; text-align:center; font-size:.78rem; color:var(--gray-s); font-weight:500; }
+    #uso-inicial strong { color:var(--white); }
+    #uso-badge { display:none; margin-top:12px; }
+    #uso-badge-inner { display:flex; align-items:center; justify-content:space-between; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:10px 16px; }
+    #uso-aviso { display:none; margin-top:8px; background:rgba(249,115,22,.08); border:1px solid rgba(249,115,22,.2); border-radius:10px; padding:12px 14px; font-size:.78rem; color:#FDBA74; line-height:1.55; }
+    #uso-aviso a { color:var(--orange); font-weight:700; text-decoration:none; display:inline-block; margin-top:4px; }
+
+    /* LOADING */
+    .loading { display:none; text-align:center; padding:52px 24px; }
+    .loading.show { display:block; }
+    .spinner { width:36px; height:36px; border:2px solid var(--border2); border-top-color:var(--blue); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 16px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loading p { color:var(--gray); font-size:.9rem; margin-bottom:4px; }
+    .loading small { color:var(--gray-s); font-size:.75rem; }
+
+    /* RESULTADOS */
     .res-card { display:none; }
     .res-card.show { display:block; }
+    .res-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+    .res-title { font-size:.92rem; font-weight:800; color:var(--white); }
+    .res-title span { color:var(--green); }
+    .btn-regen { font-size:.75rem; font-weight:600; color:var(--gray-s); background:none; border:1px solid var(--border); padding:5px 12px; border-radius:7px; cursor:pointer; transition:all .2s; }
+    .btn-regen:hover { border-color:var(--blue-l); color:var(--white); }
+
+    /* TABS */
     .tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:24px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     .tabs::-webkit-scrollbar { display:none; }
-    .tab { padding:10px 16px; font-size:.8rem; font-weight:700; cursor:pointer; color:var(--gray-s); border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; flex-shrink:0; }
+    .tab { padding:10px 16px; font-size:.8rem; font-weight:700; cursor:pointer; color:var(--gray-s); border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; flex-shrink:0; background:none; border-top:none; border-left:none; border-right:none; }
     .tab:hover { color:var(--white); }
-    .tab.active { color:var(--blue); border-bottom-color:var(--blue); }
+    .tab.active { color:var(--blue-l); border-bottom-color:var(--blue); }
     .tab-panel { display:none; }
     .tab-panel.active { display:block; }
 
     /* HOOK CARDS */
-    .hook-item { background:#fff; border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:10px; transition:border-color .2s; }
-    .hook-item:hover { border-color:var(--blue-l); }
-    .hook-label { font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--blue); margin-bottom:8px; }
-    .hook-text { font-size:.97rem; line-height:1.65; margin-bottom:12px; word-break:break-word; overflow-wrap:break-word; }
+    .hook-item { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-bottom:10px; }
+    .hook-item:last-child { margin-bottom:0; }
+    .hook-label { font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--blue-l); margin-bottom:8px; }
+    .hook-text { font-size:.95rem; line-height:1.7; margin-bottom:12px; color:var(--white); word-break:break-word; }
     .hook-actions { display:flex; gap:8px; align-items:center; }
-    .btn-copy { font-size:.75rem; font-weight:700; padding:5px 12px; border-radius:6px; cursor:pointer; background:var(--blue-glow); color:var(--blue-l); border:1px solid var(--blue); transition:all .2s; }
-    .btn-copy:hover { background:var(--blue); color:#fff; }
-    .btn-copy.ok { background:#DCFCE7; color:#16A34A; border-color:#86EFAC; }
-    .tag-tipo { font-size:.72rem; color:var(--gray-s); background:var(--border); padding:3px 10px; border-radius:6px; }
+    .btn-copy { font-size:.74rem; font-weight:700; padding:5px 12px; border-radius:6px; cursor:pointer; background:var(--blue-glow); color:var(--blue-l); border:1px solid rgba(37,99,235,.25); transition:all .2s; }
+    .btn-copy:hover { background:var(--blue); color:#fff; border-color:var(--blue); }
+    .btn-copy.ok { background:rgba(34,197,94,.1); color:var(--green); border-color:rgba(34,197,94,.3); }
+    .tag-tipo { font-size:.7rem; color:var(--gray-s); background:var(--border); padding:3px 10px; border-radius:6px; }
 
     /* TELEPROMPTER */
-    .teleprompter-block { background:#0a0a0a; border:1px solid #2a2a2a; border-radius:10px; padding:18px 20px; margin-bottom:4px; }
-    .teleprompter-label { font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#3ECF6A; margin-bottom:12px; }
-    .teleprompter-text { font-size:1.05rem; line-height:1.85; color:#f0f0f0; white-space:pre-wrap; word-break:break-word; font-family:'Courier New',monospace; }
-    .btn-teleprompter { background:linear-gradient(135deg,#3ECF6A,#22a855); color:#000; font-weight:800; margin-top:16px; width:100%; }
+    .teleprompter-block { background:#08101e; border:1px solid #1a2a40; border-radius:10px; padding:18px 20px; }
+    .teleprompter-label { font-size:.67rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:var(--green); margin-bottom:12px; }
+    .teleprompter-text { font-size:1rem; line-height:1.9; color:#e2e8f0; white-space:pre-wrap; word-break:break-word; font-family:'Courier New',monospace; }
+    .btn-teleprompter { background:var(--green) !important; color:#000 !important; font-weight:800; margin-top:16px; width:100%; border-color:var(--green) !important; }
     .btn-teleprompter:hover { opacity:.9; }
 
     /* GUION */
-    .script-block { background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; }
-    .script-section { margin-bottom:18px; }
-    .script-section:last-child { margin-bottom:0; }
-    .script-title { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px; }
-    .script-title.hook { color:var(--blue); }
-    .script-title.desarrollo { color:var(--blue-l); }
-    .script-title.cta { color:#EA580C; }
-    .script-text { font-size:.93rem; line-height:1.7; color:var(--white); word-break:break-word; overflow-wrap:break-word; }
+    .script-block { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
+    .script-section { margin-bottom:16px; }
+    .script-title { font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+    .script-title.hook { color:var(--blue-l); }
+    .script-title.desarrollo { color:#818CF8; }
+    .script-title.cta { color:var(--orange); }
+    .script-text { font-size:.92rem; line-height:1.75; color:var(--white); word-break:break-word; }
     .script-meta { display:flex; gap:12px; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); flex-wrap:wrap; }
-    .meta-item { font-size:.75rem; color:var(--gray-s); display:flex; align-items:center; gap:5px; }
-    .meta-item span { color:var(--white); font-weight:600; }
-    .btn-copy-full { margin-top:14px; font-size:.8rem; font-weight:700; padding:8px 18px; border-radius:8px; cursor:pointer; background:var(--blue-glow); color:var(--blue-l); border:1px solid var(--blue); transition:all .2s; }
-    .btn-copy-full:hover { background:var(--blue); color:#fff; }
+    .meta-item { font-size:.74rem; color:var(--gray-s); display:flex; align-items:center; gap:4px; }
+    .meta-item span { color:var(--gray); font-weight:600; }
 
-    /* PROMPT IMAGEN */
-    .prompt-block { background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
-    .prompt-intro { font-size:.82rem; color:var(--gray); margin-bottom:14px; line-height:1.6; }
-    .prompt-text { font-size:.88rem; line-height:1.75; color:var(--white); background:#F1F5F9; border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; font-family: monospace; white-space: pre-wrap; word-break:break-word; overflow-wrap:break-word; max-width:100%; }
-    .prompt-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
-    .ptag { font-size:.7rem; font-weight:600; padding:3px 10px; border-radius:6px; background:rgba(0,102,255,.1); color:var(--blue-l); border:1px solid var(--blue-glow); }
+    /* COPY BTN */
+    .btn-copy-full { margin-top:14px; font-size:.78rem; font-weight:700; padding:8px 18px; border-radius:8px; cursor:pointer; background:var(--blue-glow); color:var(--blue-l); border:1px solid rgba(37,99,235,.25); transition:all .2s; }
+    .btn-copy-full:hover { background:var(--blue); color:#fff; border-color:var(--blue); }
+    .btn-copy-full.ok { background:rgba(34,197,94,.1); color:var(--green); border-color:rgba(34,197,94,.3); }
 
-    /* TIPS */
-    .tips-box { background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px; padding:16px 20px; margin-top:16px; }
-    .tips-title { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--blue); margin-bottom:10px; }
-    .tips-list { list-style:none; display:flex; flex-direction:column; gap:7px; }
-    .tips-list li { font-size:.85rem; color:var(--gray); display:flex; gap:8px; }
-    .tips-list li::before { content:"→"; color:var(--blue); flex-shrink:0; }
+    /* PROMPT */
+    .prompt-intro { font-size:.8rem; color:var(--gray); margin-bottom:12px; line-height:1.6; }
+    .prompt-text { font-size:.87rem; line-height:1.8; color:#CBD5E1; background:#08101e; border:1px solid #1a2a40; border-radius:8px; padding:16px; margin-bottom:12px; font-family:monospace; white-space:pre-wrap; word-break:break-word; }
+    .prompt-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+    .ptag { font-size:.68rem; font-weight:600; padding:3px 10px; border-radius:6px; background:var(--blue-glow); color:var(--blue-l); border:1px solid rgba(37,99,235,.2); }
 
-    /* REGEN */
-    .res-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
-    .res-title { font-size:.95rem; font-weight:800; }
-    .res-title span { color:var(--blue); }
-    .btn-regen { font-size:.75rem; font-weight:600; color:var(--gray); background:none; border:1px solid var(--border); padding:5px 12px; border-radius:7px; cursor:pointer; transition:all .2s; }
-    .btn-regen:hover { border-color:var(--blue); color:var(--white); }
+    /* POST-RESULT */
+    #post-result { display:none; background:var(--card); border:1px solid var(--border); border-top:3px solid var(--blue); border-radius:16px; padding:28px; margin-bottom:16px; text-align:center; }
+    #post-result h3 { font-size:1.1rem; font-weight:900; margin-bottom:10px; letter-spacing:-.01em; }
+    #post-result h3 span { color:var(--blue-l); }
+    #post-result p { font-size:.88rem; color:var(--gray); line-height:1.7; margin-bottom:6px; }
+    #post-result .subtext { font-size:.82rem; color:var(--gray-s); margin-bottom:24px; }
+    .btn-waitlist-cta { display:inline-flex; align-items:center; gap:8px; background:var(--blue); color:#fff; font-size:.85rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:13px 24px; border-radius:10px; border:none; cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(37,99,235,.3); }
+    .btn-waitlist-cta:hover { background:#1d4ed8; transform:translateY(-1px); }
 
-    /* COUNTER */
-    .counter { display:flex; justify-content:center; gap:32px; padding:14px; border-bottom:1px solid var(--border); background:#EFF6FF; flex-wrap:wrap; }
-    .cnt-item { text-align:center; }
-    .cnt-num { font-size:1.3rem; font-weight:900; color:var(--blue); }
-    .cnt-lbl { font-size:.65rem; color:var(--gray-s); text-transform:uppercase; letter-spacing:.05em; }
+    /* WAITLIST SECTION */
+    #waitlist-section { display:none; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:16px; }
+    #waitlist-section h3 { font-size:1rem; font-weight:800; margin-bottom:8px; }
+    #waitlist-section p { font-size:.87rem; color:var(--gray); line-height:1.7; margin-bottom:20px; }
+    .waitlist-form { display:flex; flex-direction:column; gap:10px; }
+    .waitlist-form input { background:var(--card2); border:1px solid var(--border2); border-radius:10px; color:var(--white); font-family:inherit; font-size:.9rem; padding:12px 14px; outline:none; transition:border-color .2s, box-shadow .2s; }
+    .waitlist-form input::placeholder { color:var(--gray-s); }
+    .waitlist-form input:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-glow); }
+    .btn-waitlist-submit { background:var(--blue); color:#fff; font-family:inherit; font-size:.88rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:14px; border-radius:10px; border:none; cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(37,99,235,.25); }
+    .btn-waitlist-submit:hover { background:#1d4ed8; transform:translateY(-1px); }
+    .btn-waitlist-submit:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+    .waitlist-micro { font-size:.72rem; color:var(--gray-s); text-align:center; }
+    #waitlist-success { display:none; text-align:center; padding:16px 0; }
+    #waitlist-success .success-icon { font-size:2rem; margin-bottom:12px; }
+    #waitlist-success h4 { font-size:.98rem; font-weight:800; margin-bottom:6px; }
+    #waitlist-success p { font-size:.85rem; color:var(--gray); line-height:1.6; }
 
-    footer { text-align:center; padding:36px 24px; color:var(--gray-s); font-size:.78rem; border-top:1px solid var(--border); background:#F8FAFC; }
-    footer a { color:var(--blue); text-decoration:none; font-weight:600; }
+    /* LIMITE CARD */
+    #limite-card { display:none; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:36px 28px; margin-bottom:16px; text-align:center; }
+    #limite-card .limite-icon { font-size:2.5rem; margin-bottom:20px; }
+    #limite-card h2 { font-size:1.2rem; font-weight:900; margin-bottom:12px; letter-spacing:-.01em; }
+    #limite-card > p { font-size:.88rem; color:var(--gray); line-height:1.7; max-width:400px; margin:0 auto 28px; }
+    #limite-card .divider { height:1px; background:var(--border); margin:28px 0; }
+
+    /* FOOTER */
+    footer { text-align:center; padding:36px 24px; color:var(--gray-s); font-size:.76rem; border-top:1px solid var(--border); }
+    footer a { color:var(--blue-l); text-decoration:none; font-weight:600; }
+    .footer-logo { display:inline-flex; align-items:center; gap:8px; margin-bottom:12px; }
+    .footer-logo-icon { width:24px; height:24px; border-radius:6px; background:var(--blue); display:flex; align-items:center; justify-content:center; }
+    .footer-logo-icon svg { width:11px; height:11px; }
+    .footer-brand { font-size:.8rem; font-weight:800; color:var(--white); }
+
+    @media(max-width:480px){ .hero { padding:36px 20px 24px; } }
   </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
   <div class="nav-left">
-    <svg width="34" height="34" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;border-radius:9px;">
-      <rect width="100" height="100" rx="18" fill="#1D4ED8"/>
-      <polygon points="50,14 88,82 12,82" fill="#FFFFFF"/>
-    </svg>
-    <div class="nav-brand-wrap">
-      <div class="nav-brand-top">Sistema Creador IA</div>
-      <div class="nav-brand-main">Tu Primer <span>Empleado</span> IA</div>
+    <div class="nav-logo">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,14 88,82 12,82" fill="#FFFFFF"/>
+      </svg>
     </div>
-    <span class="nav-badge">BETA</span>
+    <span class="nav-name">Mini Sistema Creador IA</span>
   </div>
-  <div class="nav-right">Por <a href="#">York Martínez</a> · Tu Primer Empleado IA</div>
+  <span class="nav-badge">15 generaciones gratis</span>
 </nav>
 
-<div class="counter">
-  <div class="cnt-item"><div class="cnt-num" id="cnt-total">0</div><div class="cnt-lbl">Contenidos generados</div></div>
-  <div class="cnt-item"><div class="cnt-num">Reels</div><div class="cnt-lbl">Hook + Guión + Descripción</div></div>
-  <div class="cnt-item"><div class="cnt-num">Post</div><div class="cnt-lbl">Caption + Hashtags + Imagen</div></div>
-</div>
-
+<!-- HERO -->
 <div class="hero">
-  <div class="hero-tag">⚡ Para creadores hispanos que quieren publicar hoy</div>
-  <h1>Deja de quedarte en blanco.<br><em>La IA escribe por ti.</em></h1>
-  <p>Escribe tu nicho y tu tema — obtienes hooks reales, un guión completo listo para grabar y el caption para el post.</p>
+  <div class="hero-tag">⚡ Para creadores y emprendedores hispanos</div>
+  <h1>Convierte una idea en contenido<br><em>listo con IA</em></h1>
+  <p>Escribe tu nicho, tu audiencia y tu tema. El sistema genera hook, guión, caption, hashtags y prompt de imagen para que no empieces desde cero.</p>
+  <p class="hero-micro">🎁 Tienes 15 generaciones gratis para probar el sistema.</p>
 </div>
 
-<div class="steps">
-  <div class="step"><div class="step-num">1</div> Escribe tu nicho y tema</div>
-  <div class="step-arrow">›</div>
-  <div class="step"><div class="step-num">2</div> La IA crea el contenido</div>
-  <div class="step-arrow">›</div>
-  <div class="step"><div class="step-num">3</div> Copia, graba y publica</div>
+<!-- METHOD -->
+<div class="method">
+  <div class="method-step"><div class="method-step-num">1</div><span class="method-step-label">Idea</span></div>
+  <div class="method-arrow">›</div>
+  <div class="method-step"><div class="method-step-num">2</div><span class="method-step-label">Ángulo</span></div>
+  <div class="method-arrow">›</div>
+  <div class="method-step"><div class="method-step-num">3</div><span class="method-step-label">Pieza</span></div>
+  <div class="method-arrow">›</div>
+  <div class="method-step"><div class="method-step-num">4</div><span class="method-step-label">Publicación</span></div>
 </div>
 
 <div class="wrap">
+  <!-- FORM CARD -->
   <div class="card">
+
     <!-- Plataforma -->
     <div class="sec-label">Plataforma</div>
     <div class="platforms" style="margin-bottom:24px;">
-      <button class="plat-btn active" data-p="Reels">🎬 Reels</button>
+      <button class="plat-btn active" data-p="Reels">🎬 Reel</button>
       <button class="plat-btn" data-p="Post">🖼️ Post</button>
     </div>
 
@@ -209,14 +252,14 @@
     <div class="grid2" style="margin-bottom:14px;">
       <div class="field">
         <label>Nicho o industria</label>
-        <input type="text" id="nicho" placeholder="ej. Marketing digital, Fitness, IA..." />
+        <input type="text" id="nicho" placeholder="ej. Marketing digital, Fitness, Finanzas..." />
       </div>
       <div class="field">
         <label>Audiencia objetivo</label>
         <input type="text" id="audiencia" placeholder="ej. Emprendedores latinos 25-40..." />
       </div>
       <div class="field full">
-        <label>¿De qué trata el contenido?</label>
+        <label>Idea o tema del contenido</label>
         <textarea id="tema" placeholder="ej. Cómo usar ChatGPT para crear contenido 10x más rápido sin perder tu voz personal..."></textarea>
       </div>
     </div>
@@ -267,52 +310,33 @@
       </div>
     </div>
 
-    <div id="error-msg" style="display:none;background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;border-radius:10px;padding:12px 16px;font-size:.85rem;font-weight:600;margin-bottom:10px;line-height:1.5;"></div>
+    <div id="error-msg"></div>
 
     <button class="btn-gen" id="btnGen" onclick="generar()">
-      ⚡ Generar contenido
+      ⚡ Crear mi contenido gratis
     </button>
 
-    <!-- Mensaje inicial — visible antes de la primera generación -->
-    <div id="uso-inicial" style="margin-top:12px;text-align:center;font-size:.78rem;color:var(--gray-s);font-weight:500;">
+    <!-- Mensaje inicial -->
+    <div id="uso-inicial" style="margin-top:12px;text-align:center;font-size:.76rem;color:var(--gray-s);">
       🎁 Tienes <strong style="color:var(--white);">15 generaciones gratis</strong> para probar el sistema
     </div>
 
-    <!-- Contador — aparece después de la primera generación -->
-    <div id="uso-badge" style="display:none;margin-top:12px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:10px 16px;">
-        <span style="font-size:.78rem;color:var(--gray);font-weight:600;">Generaciones disponibles</span>
+    <!-- Contador -->
+    <div id="uso-badge">
+      <div id="uso-badge-inner">
+        <span style="font-size:.76rem;color:var(--gray);font-weight:600;">Generaciones disponibles</span>
         <div style="display:flex;align-items:center;gap:8px;">
-          <div id="uso-bar-wrap" style="width:80px;height:6px;background:var(--border);border-radius:10px;overflow:hidden;">
+          <div style="width:72px;height:5px;background:var(--border);border-radius:10px;overflow:hidden;">
             <div id="uso-bar" style="height:100%;background:var(--blue);border-radius:10px;transition:width .4s;width:0%"></div>
           </div>
-          <span id="uso-texto" style="font-size:.78rem;font-weight:800;color:var(--blue);white-space:nowrap;"></span>
+          <span id="uso-texto" style="font-size:.76rem;font-weight:800;color:var(--blue-l);white-space:nowrap;"></span>
         </div>
       </div>
-      <!-- Aviso cuando quedan 3 -->
-      <div id="uso-aviso" style="display:none;margin-top:8px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:10px 14px;font-size:.78rem;color:#C2410C;line-height:1.5;">
-        ⚠️ Te quedan pocas generaciones. Si esta herramienta te está ayudando, <strong>únete a la lista de espera</strong> para recibir acceso temprano al sistema completo.
-        <a href="https://www.skool.com/sistema-creador-ia-2270/about" target="_blank" style="display:inline-block;margin-top:6px;color:#EA580C;font-weight:700;text-decoration:none;">Unirme a la lista de espera →</a>
+      <div id="uso-aviso">
+        ⚠️ Te quedan pocas generaciones. Si esta herramienta te está ayudando, únete a la lista de espera para recibir acceso temprano al sistema completo.
+        <a href="#waitlist-section" onclick="mostrarWaitlist()">Unirme a la lista de espera →</a>
       </div>
     </div>
-  </div>
-
-  <!-- PANTALLA LÍMITE ALCANZADO -->
-  <div class="card" id="limite-card" style="display:none;text-align:center;padding:40px 32px;">
-    <div style="font-size:2.5rem;margin-bottom:16px;">🎯</div>
-    <h2 style="font-size:1.4rem;font-weight:900;margin-bottom:12px;color:var(--white);">Ya usaste tus 15 generaciones gratis.</h2>
-    <p style="font-size:.9rem;color:var(--gray);line-height:1.7;max-width:420px;margin:0 auto 28px;">
-      Si esta herramienta te ayudó a convertir ideas en contenido, únete a la lista de espera del Sistema Creador IA para recibir acceso temprano, recursos nuevos y futuras mejoras.
-    </p>
-    <a href="https://www.skool.com/sistema-creador-ia-2270/about" target="_blank"
-       style="display:inline-flex;align-items:center;gap:8px;background:#1D4ED8;color:#fff;font-size:.9rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase;padding:16px 28px;border-radius:12px;text-decoration:none;box-shadow:0 4px 14px rgba(29,78,216,.35);margin-bottom:12px;">
-      ⚡ Unirme a la lista de espera
-    </a>
-    <br/>
-    <button onclick="document.getElementById('limite-card').style.display='none';document.getElementById('results').classList.add('show');"
-      style="background:none;border:1px solid var(--border);color:var(--gray);font-size:.82rem;font-weight:600;padding:10px 20px;border-radius:10px;cursor:pointer;margin-top:8px;">
-      Ver mi último contenido generado
-    </button>
   </div>
 
   <!-- LOADING -->
@@ -325,32 +349,91 @@
   <!-- RESULTADOS -->
   <div class="card res-card" id="results">
     <div class="res-header">
-      <div class="res-title">✅ Contenido <span>listo para publicar</span></div>
-      <button class="btn-regen" onclick="generar()">↻ Regenerar</button>
+      <div class="res-title">✅ Contenido <span>listo</span></div>
+      <button class="btn-regen" onclick="generar()">↻ Generar otro</button>
     </div>
     <div class="tabs" id="tabs-container"></div>
     <div id="tabs-content"></div>
   </div>
 
+  <!-- POST-RESULT: ¿Ves la diferencia? -->
+  <div id="post-result">
+    <h3>¿Ves la <span>diferencia</span>?</h3>
+    <p>No era falta de ideas. Era falta de sistema.</p>
+    <p class="subtext">Guarda este resultado, ajústalo a tu estilo y publícalo. Si quieres crear contenido así todas las semanas, únete a la lista de espera.</p>
+    <button class="btn-waitlist-cta" onclick="mostrarWaitlist()">
+      Unirme a la lista de espera →
+    </button>
+  </div>
+
+  <!-- WAITLIST SECTION -->
+  <div id="waitlist-section">
+    <h3>¿Quieres acceso temprano al Sistema Creador IA?</h3>
+    <p>Estoy creando una comunidad donde compartiré sistemas, herramientas y procesos para crear contenido con IA sin empezar desde cero. Si quieres entrar cuando abra, únete a la lista de espera.</p>
+
+    <div id="waitlist-form-wrap">
+      <form class="waitlist-form" onsubmit="enviarWaitlist(event)">
+        <input type="text" id="wl-nombre" placeholder="Tu nombre" required />
+        <input type="email" id="wl-email" placeholder="Tu correo electrónico" required />
+        <button type="submit" class="btn-waitlist-submit" id="btnWaitlist">
+          Unirme a la lista de espera
+        </button>
+        <p class="waitlist-micro">🔒 Sin spam. Solo recursos útiles y avisos del lanzamiento.</p>
+      </form>
+    </div>
+
+    <div id="waitlist-success">
+      <div class="success-icon">✓</div>
+      <h4>Listo. Estás en la lista.</h4>
+      <p>Te avisaré cuando abra el acceso al Sistema Creador IA.</p>
+    </div>
+  </div>
+
+  <!-- LÍMITE ALCANZADO -->
+  <div id="limite-card">
+    <div class="limite-icon">🎯</div>
+    <h2>Ya usaste tus 15 generaciones gratis.</h2>
+    <p>Si esta herramienta te ayudó a crear contenido, el Sistema Creador IA completo te ayudará a crear contenido todas las semanas sin empezar desde cero.</p>
+
+    <div id="limite-form-wrap">
+      <form class="waitlist-form" onsubmit="enviarWaitlistLimite(event)" style="max-width:400px;margin:0 auto;">
+        <input type="text" id="lm-nombre" placeholder="Tu nombre" required />
+        <input type="email" id="lm-email" placeholder="Tu correo electrónico" required />
+        <button type="submit" class="btn-waitlist-submit" id="btnLimite">
+          ⚡ Unirme a la lista de espera
+        </button>
+        <p class="waitlist-micro">🔒 Sin spam. Solo recursos útiles y avisos del lanzamiento.</p>
+      </form>
+    </div>
+
+    <div id="limite-success" style="display:none;margin-top:20px;">
+      <p style="color:var(--green);font-weight:700;font-size:.9rem;">✓ Listo. Estás en la lista. Te avisamos cuando abra.</p>
+    </div>
+
+    <div class="divider"></div>
+    <button onclick="document.getElementById('limite-card').style.display='none';document.getElementById('results').classList.add('show');"
+      style="background:none;border:1px solid var(--border);color:var(--gray-s);font-size:.8rem;font-weight:600;padding:9px 18px;border-radius:8px;cursor:pointer;">
+      Ver mi último contenido generado
+    </button>
+  </div>
+
 </div>
 
+<!-- FOOTER -->
 <footer>
-  <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="border-radius:9px;margin-bottom:10px;">
-    <rect width="100" height="100" rx="18" fill="#1D4ED8"/>
-    <polygon points="50,14 88,82 12,82" fill="#FFFFFF"/>
-  </svg><br/>
-  <div style="font-size:.58rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#94A3B8; margin-bottom:2px;">Tu Primer Empleado IA</div>
-  <div style="font-size:.88rem; font-weight:900; margin-bottom:12px; color:#0F172A;">Sistema <span style="color:#1D4ED8;">Creador</span> IA</div>
-  Construido con IA · <a href="#">Tu Primer Empleado IA</a> · York Martínez<br/>
-  <span style="margin-top:6px; display:block;">
-    ¿Quieres aprender a construir herramientas como esta? → <a href="#">Únete al programa</a>
-  </span>
+  <div class="footer-logo">
+    <div class="footer-logo-icon">
+      <svg viewBox="0 0 100 100" fill="none"><polygon points="50,14 88,82 12,82" fill="#FFFFFF"/></svg>
+    </div>
+    <span class="footer-brand">Mini Sistema Creador IA</span>
+  </div>
+  <br/>
+  <span style="color:var(--gray-s);">Construido por <a href="#">York Martínez</a> · Tu Primer Empleado IA · Beta pública</span>
 </footer>
 
 <script>
   let plataforma = 'Reels';
   let total = parseInt(localStorage.getItem('cgTotal') || '0');
-  document.getElementById('cnt-total').textContent = total;
 
   function actualizarUI() {
     const esPost = plataforma === 'Post';
@@ -360,7 +443,6 @@
   }
   actualizarUI();
 
-  // Plataforma
   document.querySelectorAll('.plat-btn').forEach(b => {
     b.addEventListener('click', () => {
       document.querySelectorAll('.plat-btn').forEach(x => x.classList.remove('active'));
@@ -384,6 +466,7 @@
     document.getElementById('btnGen').disabled = true;
     document.getElementById('loading').classList.add('show');
     document.getElementById('results').classList.remove('show');
+    document.getElementById('post-result').style.display = 'none';
 
     try {
       const res  = await fetch('/api/generate', {
@@ -393,38 +476,17 @@
       });
       const data = await res.json();
 
-      if (res.status === 401) {
-        // Sin sesión — redirigir al registro
-        mostrarError('Necesitas registrarte para usar la herramienta.', true);
-        return;
-      }
-      if (res.status === 429) {
-        mostrarLimite();
-        return;
-      }
-      if (res.status === 503) {
-        mostrarError(data.error || 'Servidor ocupado. Espera 10 segundos e intenta de nuevo.');
-        return;
-      }
-      if (res.status === 504) {
-        mostrarError(data.error || 'La generación tardó demasiado. Intenta de nuevo.');
-        return;
-      }
-      if (!res.ok) {
-        mostrarError(data.error || 'Error generando contenido. Intenta de nuevo.');
-        return;
-      }
+      if (res.status === 401) { mostrarError('Necesitas registrarte para usar la herramienta.', true); return; }
+      if (res.status === 429) { mostrarLimite(); return; }
+      if (res.status === 503) { mostrarError(data.error || 'Servidor ocupado. Espera 10 segundos e intenta de nuevo.'); return; }
+      if (res.status === 504) { mostrarError(data.error || 'La generación tardó demasiado. Intenta de nuevo.'); return; }
+      if (!res.ok) { mostrarError(data.error || 'Error generando contenido. Intenta de nuevo.'); return; }
 
       renderResultados(data);
-
-      // Actualizar contador de generaciones
-      if (data._uso) {
-        actualizarContador(data._uso);
-      }
+      if (data._uso) actualizarContador(data._uso);
 
       total++;
       localStorage.setItem('cgTotal', total);
-      document.getElementById('cnt-total').textContent = total;
 
     } catch(e) {
       mostrarError('Error de conexión. Revisa tu internet e intenta de nuevo.');
@@ -440,7 +502,7 @@
     if (!el) { alert(msg); return; }
     el.style.display = 'block';
     if (redirigir) {
-      el.innerHTML = msg + ' <a href="/acceso" style="color:var(--blue);font-weight:700;">Regístrate aquí →</a>';
+      el.innerHTML = msg + ' <a href="/acceso">Regístrate aquí →</a>';
     } else {
       el.textContent = msg;
     }
@@ -456,47 +518,78 @@
     const inicial = document.getElementById('uso-inicial');
 
     if (!badge) return;
-
-    // Ocultar mensaje inicial, mostrar contador
     if (inicial) inicial.style.display = 'none';
     badge.style.display = 'block';
 
     const pct   = Math.round((usadas / limite) * 100);
-    const color = quedan <= 3 ? '#EF4444' : quedan <= 7 ? '#F97316' : 'var(--blue)';
-
+    const color = quedan <= 3 ? '#EF4444' : quedan <= 7 ? '#F97316' : 'var(--blue-l)';
     bar.style.width      = pct + '%';
     bar.style.background = color;
     texto.style.color    = color;
     texto.textContent    = `${quedan} de ${limite} restantes`;
 
-    // Aviso cuando quedan 3 o menos
     if (aviso) aviso.style.display = quedan <= 3 && quedan > 0 ? 'block' : 'none';
-
-    // Si llegó a 0, mostrar pantalla de límite
     if (quedan <= 0) mostrarLimite();
   }
 
   function mostrarLimite() {
     document.getElementById('limite-card').style.display = 'block';
     document.getElementById('results').classList.remove('show');
+    document.getElementById('post-result').style.display = 'none';
     document.getElementById('limite-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  // Almacén de textos a copiar — evita pasar texto por atributos HTML (rompe con comillas/saltos)
-  const _copy = {};
-  let _copyIdx = 0;
-  function regCopy(text) {
-    const k = 'c' + (_copyIdx++);
-    _copy[k] = text;
-    return k;
+  function mostrarWaitlist() {
+    const ws = document.getElementById('waitlist-section');
+    ws.style.display = 'block';
+    setTimeout(() => ws.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
   }
 
-  // Listener único delegado para todos los botones de copiar
+  async function enviarWaitlist(e) {
+    e.preventDefault();
+    const nombre = document.getElementById('wl-nombre').value.trim();
+    const email  = document.getElementById('wl-email').value.trim();
+    const btn    = document.getElementById('btnWaitlist');
+    btn.disabled = true;
+    btn.textContent = 'Uniéndote...';
+    try {
+      await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email })
+      });
+    } catch(err) { console.error(err); }
+    document.getElementById('waitlist-form-wrap').style.display = 'none';
+    document.getElementById('waitlist-success').style.display = 'block';
+  }
+
+  async function enviarWaitlistLimite(e) {
+    e.preventDefault();
+    const nombre = document.getElementById('lm-nombre').value.trim();
+    const email  = document.getElementById('lm-email').value.trim();
+    const btn    = document.getElementById('btnLimite');
+    btn.disabled = true;
+    btn.textContent = 'Uniéndote...';
+    try {
+      await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email })
+      });
+    } catch(err) { console.error(err); }
+    document.getElementById('limite-form-wrap').style.display = 'none';
+    document.getElementById('limite-success').style.display = 'block';
+  }
+
+  // ─── Copy system ─────────────────────────────────────────────────────────
+  const _copy = {};
+  let _copyIdx = 0;
+  function regCopy(text) { const k = 'c' + (_copyIdx++); _copy[k] = text; return k; }
+
   document.addEventListener('click', e => {
     const btn = e.target.closest('[data-copy-key]');
     if (!btn) return;
-    const text = _copy[btn.dataset.copyKey] || '';
-    navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(_copy[btn.dataset.copyKey] || '').then(() => {
       const orig = btn.textContent;
       btn.textContent = '✅ Copiado';
       btn.classList.add('ok');
@@ -513,15 +606,15 @@
     return `<button class="btn-copy" data-copy-key="${k}">${label}</button>`;
   }
 
+  // ─── Render resultados ────────────────────────────────────────────────────
   function renderResultados(d) {
     const tc = document.getElementById('tabs-container');
     const tp = document.getElementById('tabs-content');
     tc.innerHTML = '';
     tp.innerHTML = '';
 
-    const sv = v => (v != null ? String(v) : '');
+    const sv  = v => (v != null ? String(v) : '');
     const esc = v => sv(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
     const esPost = plataforma === 'Post';
     let tabs, panels;
 
@@ -533,7 +626,7 @@
       tabs = ['✍️ Caption','# Hashtags','🖼 Imagen'];
       panels = [
         `<div class="hook-item">
-          <div class="hook-label">🔥 Primera línea (hook)</div>
+          <div class="hook-label">🔥 Hook — primera línea</div>
           <div class="hook-text">${esc(cap.hook)}</div>
         </div>
         <div class="hook-item" style="margin-top:10px;">
@@ -570,7 +663,7 @@
               ${cpBtnSmall('📋 Copiar', sv(h.texto))}
               ${h.duracion ? `<span class="tag-tipo">⏱ ${esc(h.duracion)}</span>` : ''}
             </div>
-          </div>`).join('') || '<p style="color:var(--gray)">Sin hooks.</p>',
+          </div>`).join('') || '<p style="color:var(--gray-s)">Sin hooks.</p>',
 
         `<div class="script-block">
           <div class="teleprompter-block">
@@ -583,7 +676,7 @@
             <div class="meta-item">📝 <span>${esc(g.palabras)}</span></div>
           </div>
           <details style="margin-top:16px;">
-            <summary style="cursor:pointer;color:var(--gray);font-size:13px;">Ver por secciones ▾</summary>
+            <summary style="cursor:pointer;color:var(--gray-s);font-size:.82rem;">Ver por secciones ▾</summary>
             <div class="script-section" style="margin-top:12px;">
               <div class="script-title hook">🔥 HOOK</div>
               <div class="script-text">${esc(g.hook)}</div>
@@ -622,11 +715,12 @@
 
     const res = document.getElementById('results');
     res.classList.add('show');
-    setTimeout(() => res.scrollIntoView({ behavior:'smooth', block:'nearest' }), 60);
+    setTimeout(() => {
+      res.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      // Mostrar sección post-result después de mostrar resultados
+      setTimeout(() => { document.getElementById('post-result').style.display = 'block'; }, 800);
+    }, 60);
   }
-
 </script>
 </body>
 </html>
-
-<!-- updated -->
